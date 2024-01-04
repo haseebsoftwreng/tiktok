@@ -1,0 +1,30 @@
+<div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  position: "relative",
+                }}>
+                <Text variant="bodyMd" fontWeight="bold" as="span">
+                  {/* <SkeletonBodyText lines={1}/> */}
+                  {item.title === "ProName"
+                    ? row[item.title].length > 15
+                      ? row[item.title].slice(0, 20) + "...."
+                      : row[item.title]
+                    : row[item.title]}
+                </Text>
+                {item.title === "ProName" ? (
+                  <span
+                    style={{
+                      color: "red",
+                      position: "absolute",
+                      fontSize: "12px",
+                      display: "flex",
+                      top: "19px",
+                    }}>
+                    <Icon source={InfoMinor} tone="critical" />
+                    <p style={{ fontWeight: "500" }}>
+                      {`Edit product to fix errors and sync it to Tiktok Shop`}
+                    </p>
+                  </span>
+                ) : null}
+              </div>

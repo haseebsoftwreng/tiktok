@@ -1,0 +1,284 @@
+/** @format */
+
+.mTopBott20 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+  .inline {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+  }
+  .dis-Last {
+    display: flex;
+    justify-content: end;
+  }
+  
+  .listStyle {
+    list-style: none;
+    text-align: start;
+  }
+  .listItem {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  .listItem .Polaris-Icon {
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .order-stats {
+    padding-right: 20px;
+    border-right: 2px solid rgba(0, 0, 0, 0.27);
+    text-align: center;
+  }
+  .order-stats:last-child {
+    border-right: unset;
+  }
+  .marginTop20 {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  .margtop10 {
+    margin-top: 10px;
+  }
+  .margBottom10 {
+    margin-bottom: 10px;
+  }
+  
+  .divider {
+    color: aquamarine;
+    height: 2px;
+    width: 200px;
+  }
+  
+  .margintop30 {
+    margin-top: 50px;
+  }
+  /* ArchiveNavbar.css */
+  .archive-navbar {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    background-color: #f0f0f0;
+    text-decoration: none;
+  }
+  .archive-navbar a {
+    text-decoration: none;
+    background-color: #f0f0f0;
+    color: rgb(77, 77, 77);
+  }
+  
+  .archive-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none !important;
+  }
+  .archive-item a {
+    text-decoration: none;
+    color: rgb(77, 77, 77);
+  }
+  
+  .archive-item a .Polaris-Icon {
+    display: flex;
+  }
+  .archive-item.active {
+    background-color: #e2e2e2;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 17px;
+    border-radius: 8px;
+  }
+  
+  .archive-item:hover {
+    background-color: rgb(233, 233, 233);
+  }
+  
+  .text-bold {
+    font-weight: 500;
+  }
+  
+  /* accordin style */
+  .accordion {
+    /* border: 1px solid #ccc; */
+    border-bottom: 1px solid #cccccc67;
+    margin: 10px;
+    border-radius: 4px;
+    box-shadow: #ccc;
+    margin-bottom: 20px;
+  }
+  
+  .accordion-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    /* background-color: #f0f0f0; */
+    /* border-top-left-radius: 14px; */
+    /* border-top-right-radius: 14px; */
+  }
+  
+  .accordion-content {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    /* background-color: #fff; */
+    /* border-radius: 24px; */
+  }
+  
+  /* .icon {
+    transition: transform 0.3s;
+  }
+  
+  .icon.open {
+    transform: rotate(180deg);
+  } */
+  
+  .dis-flex {
+    display: flex;
+  }
+  /* Accordin style end */
+  
+  .Polaris-MediaCard {
+    flex-direction: row-reverse !important;
+  }
+  .Polaris-MediaCard__MediaContainer {
+    border-radius: unset !important;
+  }
+  @media only screen and (max-width: 600px) {
+    .inline {
+      flex-direction: column;
+    }
+  }
+  
+  /*  */
+  .dis-center {
+    display: flex;
+    justify-content: center;
+  }
+  .flex-inline {
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  /* Multi step form header */
+  .step-active p {
+    margin-top: 0px !important;
+  }
+  .text-circle p {
+    margin-top: -1px;
+  }
+  .text-circle {
+    width: 20px;
+    height: 20px;
+    background-color: #7e7e7e;
+    border: 2px solid #7e7e7e;
+    color: #fff;
+    text-align: center;
+    border-radius: 50%;
+    /* padding-bottom: 20px; */
+  }
+  .divider-wrapper {
+    width: 22%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  .divider-line {
+    border: 1px solid #7e7e7e;
+    margin-top: 4%;
+  }
+  
+  .step-active {
+    background-color: #fff;
+    border: 2px solid #1fa24c;
+    fill: #1fa24c;
+    padding-bottom: unset;
+    /* color:#000 !important; */
+  }
+  
+  .plan-Strach {
+    display: grid;
+    justify-content: stretch;
+    /* background-color: #ccc; */
+    height: 100%;
+  }
+  
+  .step-img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .marginTop {
+    margin-top: 20px;
+  }
+  .marginTop50 {
+    margin-top: 50px;
+  }
+  .marginTop80 {
+    margin-top: 80px;
+  }
+  
+  .connect-List {
+    padding-right: 30px;
+  }
+  .connect-li {
+    margin-bottom: 10px;
+  }
+  .popover-box {
+    padding: 20px;
+    height: 100%;
+  }
+  .upload-img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* html[class~="Polaris-Summer-Editions-2023"] .Polaris-DropZone {
+    background-color: var(--p-color-bg-surface);
+    height: 100%;
+  } */
+  
+  .FullBox {
+    display: flex;
+    column-gap: 20px;
+  }
+  .colOne {
+    width: 30%;
+  }
+  .firstCol {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 30px;
+    align-items: flex-start;
+  }
+  .second-col {
+    width: 70%;
+  }
+  .start_hover :hover {
+    color: gold;
+  }
+  .ctm_shadow .Polaris-ShadowBevel {
+    box-shadow: rgba(74, 74, 74, 1) 0px 1px 4px,
+      rgb(74, 74, 74, 1) 0px 0px 0px 3px;
+  }
+  .ctm_button button {
+    width: 60px !important;
+  }
+  .Polaris-Banner {
+    background-color: var(--p-color-bg-surface) !important;
+  }
+  .PlanPro .Polaris-InlineStack,
+  .Polaris-Text--headingSm {
+    width: 100% !important;
+  }
+  
+  .pixelchange div {
+    width: 100%;
+  }
+  
+  .hide-scroll .Polaris-TextField__VerticalContent {
+    overflow: auto !important;
+  }
+  
