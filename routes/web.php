@@ -35,7 +35,8 @@ Route::middleware(['verify.shopify'])
         Route::post('/tiktokInterestFinder',[TiktokPixelController::class,'tiktokInterestFinder'])->name('tikTokInterestFinder');
         Route::post('/getTiktokAnalyticByRange',[TiktokPixelController::class,'getTiktokAnalyticsByRange'])->name('tiktokAnalyticsByRange');
         Route::post('/getTiktokAnalytic',[TiktokPixelController::class,'getTiktokAnalytics'])->name('tiktokAnalytics');
-        
+        Route::post('/getTiktoPixelBySearch',[TiktokPixelController::class,'getTiktokPixelBySearch'])->name('getTiktokPixelBySearch');
+
         Auth::routes();
 
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

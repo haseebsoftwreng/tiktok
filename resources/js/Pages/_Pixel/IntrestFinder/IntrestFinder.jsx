@@ -78,7 +78,6 @@ function IntrestFinder() {
         useIndexResourceState(orders);
 
     const onSelectChange = (newSelectedRowKeys) => {
-      console.log("i am here");
        handleSelectionChange(newSelectedRowKeys);
         const unique = [];
         const csvDataArray = [];

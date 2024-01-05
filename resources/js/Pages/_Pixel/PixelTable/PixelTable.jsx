@@ -506,6 +506,18 @@ function PixelTable() {
         }
     };
 
+    const handleSearchBar = () =>{
+        // if (event.key === 'Enter' || event.keyCode === 13) {
+            console.log('i am here');
+            if(value != ""){
+                axioshttp.post('/getTiktoPixelBySearch',{string : value}).then((res) => {
+                    setP_pixels(res.data);
+                  })
+            }else {
+                pixelsGet();
+            }
+        // }
+    }
     ///////////////Call When Page Render////////
     useEffect(() => {
         pixelsGet();
@@ -604,6 +616,7 @@ function PixelTable() {
                                 labelHidden
                                 value={value}
                                 onChange={handleChange}
+                                onKeyUp = {handleSearchBar}
                                 autoComplete="off"
                             />
                             <Button variant="primary" onClick={showForm}>
