@@ -3,7 +3,7 @@ import {register} from "@shopify/web-pixels-extension";
 register(async (api) => {
   // Bootstrap and insert pixel script tag here
   // var FB_APP_URL = `https://haseebpixel.aipixels.app/api/web/pixel?account_id=${api.settings.accountID}`;
-  var Tiktok_APP_URL = `https://8e48-154-192-195-108.ngrok-free.app/api/titok/events?account_id=${api.settings.accountID}`;
+  var Tiktok_APP_URL = `https://pixel.aipixels.app/api/titok/events?account_id=${api.settings.accountID}`;
   await getUserIP(api);
   var ttclid='';
   // Sample subscribe to page view

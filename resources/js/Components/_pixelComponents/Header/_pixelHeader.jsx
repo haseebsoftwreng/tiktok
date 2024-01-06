@@ -5,7 +5,7 @@ import { Icon, Popover, ActionList, Divider, InlineStack, ButtonGroup,Button } f
 
 export default function PixelHeader() {
   const CurrentURl = window.location.href;
-  const Link = ['https://8e48-154-192-195-108.ngrok-free.app/pixel','https://8e48-154-192-195-108.ngrok-free.app/pixel/tiktok','https://8e48-154-192-195-108.ngrok-free.app/pixel/intrestfinder','https://8e48-154-192-195-108.ngrok-free.app/pixel/help','https://8e48-154-192-195-108.ngrok-free.app/pixel/faq',]
+  const Link = ['https://pixel.aipixels.app/pixel','https://pixel.aipixels.app/pixel/tiktok','https://pixel.aipixels.app/pixel/intrestfinder','https://pixel.aipixels.app/pixel/help','https://pixel.aipixels.app/pixel/faq',]
  
   const [activeItem, setActiveItem] = useState(
     function findIndexOfCurrentURL() {

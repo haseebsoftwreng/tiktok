@@ -3,7 +3,7 @@ import axios from 'axios';
 // Next we make an 'instance' of it
 const instance = axios.create({
 // .. where we make our configurations
-    baseURL: 'https://8e48-154-192-195-108.ngrok-free.app', 
+    baseURL: 'https://pixel.aipixels.app', 
     timeout: 900000,
 });
 // Where you would set stuff like your 'Authorization' header, etc ...
