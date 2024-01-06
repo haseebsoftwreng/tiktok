@@ -128,6 +128,41 @@ class TiktokPixelController extends Controller
             'success' => "Pixel Updated Successfully"
         ], 200);
     }
+    public function tiktokPixelsGetById(Request $request){
+        $pixel =  TikTokPixel::where('id', $request->id)->first();
+        return $pixel;
+    }
+    public function tiktokPixelEdited(Request $request){
+        $input = [];
+        $input['type'] =  $request->type;
+        $input['pixel_id'] = $request->pixel_id;
+        $input['pixel_name'] = $request->pixel_name;
+        $input['access_token'] = $request->access_token;
+        $input['test_token'] = $request->test_token;
+        // $input['utm_campaign'] = $request->utm_campaign != "" ? str_replace(' ', '', $request->utm_campaign) : null;
+        // $input['utm_source'] = $request->utm_source != "" ?  str_replace(' ', '', $request->utm_source) : null ;
+        // $input['utm_medium'] = $request->utm_medium != "" ? str_replace(' ', '', $request->utm_medium) : null;
+        
+        if ($request->type == "Collections") {
+            $dataArray = explode(',', trim($request->collections, '"'));
+            $input['collection'] = json_encode($dataArray);
+            $input['tag'] = null;
+        } elseif ($request->type == "Tags") {
+            $dataArray = explode(',', trim($request->tags, '"'));
+            $input['tag'] = json_encode($dataArray);
+            $input['collection'] = null;
+        } elseif ($request->type == "Entire Store") {
+            $input['tag'] = null;
+            $input['collection'] = null;
+            
+        }
+        $responce=TikTokPixel::where('id', $request->id)->update($input);
+        return response()->json([
+            'data_request'=>$request->pixel_id,
+            'Data'=>$responce,
+            'success' => "Pixel Updated Successfully"
+        ], 200);
+    }
     public function updateTiktokStatus(Request $request){
         $status =  TikTokPixel::where('id', $request->id)->first();
         if ($status->status != 1) {
@@ -198,7 +233,8 @@ class TiktokPixelController extends Controller
             ->groupBy($this->groupByFieldBasedOnInterval($interval))->get();
 
         $mergedData = $this->mergeDataWithAllValues($allValues, $result, $interval,$analyies);
-
+         
+        
         
         return [
             'countAnalyse' => $countAnalyse,
@@ -317,7 +353,12 @@ class TiktokPixelController extends Controller
 
     private function mergeDataWithAllValues($allValues, $result, $interval,$analyies)
     {
-        $mergedDataForAnalytic = [];
+        $mergedDataForPurchase = [];
+        $mergedDataForCheckout = [];
+        $margedDataForAddToCart=[];
+        $mergedDataForViewContent=[];
+        $mergedDataForSearch=[];
+
      
         foreach ($allValues as $value) {
             $exists = $result->contains(function ($item) use ($value, $interval) {
@@ -325,19 +366,59 @@ class TiktokPixelController extends Controller
             });
             
             if ($exists && $analyies[0] !== null) {
-                $purchaseCounts=$analyies[0]->initiateCheckout;
+                $purchaseCounts=$analyies[0]->compeletePayment;
+                $checkoutCounts=$analyies[0]->initiateCheckout;
+                $addtoCartCounts=$analyies[0]->addtoCart;
+                $viewContentCounts=$analyies[0]->viewContent;
+                $searchCounts=$analyies[0]->search;
             } else {
-                $purchaseCounts = 0;
+                $purchaseCounts=0;
+                $checkoutCounts=0;
+                $addtoCartCounts=0;
+                $viewContentCounts=0;
+                $searchCounts=0;
             }
             if($interval->d > 1 && $interval->d < 8){
-                $mergedDataForAnalytic[] = (object) [
+                $mergedDataForPurchase[] = (object) [
                     "key" => Carbon::now()->startOfWeek()->addDays($value - 1)->format('l'),
                     'value' => $purchaseCounts,
                 ];
+                $mergedDataForCheckout[] = (object) [
+                    "key" => Carbon::now()->startOfWeek()->addDays($value - 1)->format('l'),
+                    'value' => $checkoutCounts,
+                ];
+                $margedDataForAddToCart[] = (object) [
+                    "key" => Carbon::now()->startOfWeek()->addDays($value - 1)->format('l'),
+                    'value' => $addtoCartCounts,
+                ];
+                $mergedDataForViewContent[] = (object) [
+                    "key" => Carbon::now()->startOfWeek()->addDays($value - 1)->format('l'),
+                    'value' => $viewContentCounts,
+                ];
+                $mergedDataForSearch[] = (object) [
+                    "key" => Carbon::now()->startOfWeek()->addDays($value - 1)->format('l'),
+                    'value' => $searchCounts,
+                ];
             }else{
-                $mergedDataForAnalytic[] = (object) [
+                $mergedDataForPurchase[] = (object) [
                     "key" => $value,
                     'value' => $purchaseCounts,
+                ];
+                $mergedDataForCheckout[] = (object) [
+                    "key" => $value,
+                    'value' => $checkoutCounts,
+                ];
+                $margedDataForAddToCart[] = (object) [
+                    "key" => $value,
+                    'value' => $addtoCartCounts,
+                ];
+                $mergedDataForViewContent[] = (object) [
+                    "key" => $value,
+                    'value' => $viewContentCounts,
+                ];
+                $mergedDataForSearch[] = (object) [
+                    "key" => $value,
+                    'value' => $searchCounts,
                 ];
             }
             // $mergedData[] = (object) [
@@ -347,9 +428,8 @@ class TiktokPixelController extends Controller
             
         }
 
-        return [
-            $mergedDataForAnalytic,
-        ];
+        return [$mergedDataForPurchase,$mergedDataForCheckout,$margedDataForAddToCart,$mergedDataForViewContent,$mergedDataForSearch];
+        
         
     }
 

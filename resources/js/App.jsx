@@ -24,6 +24,9 @@ const PixelTable = React.lazy(() =>
 const IntrestFinder = React.lazy(() =>
   import("./Pages/_Pixel/IntrestFinder/IntrestFinder")
 );
+const EditTiktokPixel = React.lazy(() =>
+    import("./Pages/_Pixel/PixelTable/EditPixel")
+);
 const PixelHelp = React.lazy(() => import("./Pages/_Pixel/Help/Help"));
 const PixelFaqs = React.lazy(() => import("./Pages/_Pixel/Faqs/Faqs"));
 
@@ -45,6 +48,7 @@ const App = () => {
       pathname === "/pixel" ||
       pathname === "/pixel/tiktok" ||
       pathname === "/pixel/intrestfinder" ||
+      pathname.includes('/pixel/edittiktokpixels')||
       pathname === "/pixel/help" ||
       pathname === "/pixel/faq"
     ) {
@@ -206,6 +210,20 @@ const App = () => {
                 </Frame>
               }>
               <PixelTable />
+            </React.Suspense>
+          }
+        />
+  
+        <Route
+          path="/pixel/edittiktokpixels/:id"
+          element={
+            <React.Suspense
+              fallback={
+                <Frame>
+                  <Loading />
+                </Frame>
+              }>
+              <EditTiktokPixel />
             </React.Suspense>
           }
         />

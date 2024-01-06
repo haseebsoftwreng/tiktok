@@ -281,4 +281,42 @@
   .hide-scroll .Polaris-TextField__VerticalContent {
     overflow: auto !important;
   }
+
+  .skull-cell-width {
+    width: 10%;
+  }
+  
+  .skull-first-cell-width {
+    width: 1%;
+  }
+  .skull-second-cell-width {
+    width: 2%;
+  }
+  
+  .skulldata div {
+    height: 10px;
+    margin: 10px 8px;
+  }
+  
+  .skull-tabs {
+    width: 100%;
+  }
+  .skull-tabs div {
+    width: 70%;
+  }
+  
+  .skull-table thead {
+    display: none;
+  }
+  .skulldata-first div {
+    width: 50px;
+    height: 25px;
+    border-radius: 3px !important;
+  }
+  .skulldata-second div {
+    width: 40px;
+    height: 40px;
+    border-radius: 3px !important;
+  }
+
   

@@ -25,9 +25,9 @@ export default function Pixel() {
 
     ///////////////////////Backend Code////////////
     const [pixels, setPixels] = useState([]);
-    const [datePickerValue, setDatePickerValue] = useState(null);
-    const [analyiesStartDate, setAnalyiesStartDate] = useState("");
-    const [analyiesEndDate, setAnalyiesEndDate] = useState("");
+    const [datePickerValue, setDatePickerValue] = useState(JSON.parse(localStorage.getItem('selectedDateSlot')));
+    const [analyiesStartDate, setAnalyiesStartDate] = useState();
+    const [analyiesEndDate, setAnalyiesEndDate] = useState();
     const [pixelAnalytics, setPixelAnalytics] = useState("");
     const [pixelAnalyticsData, setPixelAnalyticsData] = useState("");
     const [pixelIdSelected, setPixelIdSelected] = useState('');
@@ -99,6 +99,7 @@ export default function Pixel() {
                 "Including Clicks on the store affiliate link and product affilate link",
         },
     ];
+    
     const pixelsGet = () => {
         axioshttp.get("/getTikTokPixel").then((res) => {
             setPixels(res.data);
@@ -113,29 +114,36 @@ export default function Pixel() {
                 setPixelAnalytics(res.data);
             });
     };
+    const localStorageData=(pixel_Id,selected_DateSlot)=>{
+        localStorage.setItem('pixel_id', pixel_Id);
+        localStorage.setItem('selectedDateSlot', JSON.stringify(selected_DateSlot));
+        //  const storedData = localStorage.getItem('selectedDateSlot');
+        //  const retrievedObject = JSON.parse(storedData);
+    }
 
-    const handleDateRange = (event) => {
-        if (event == null) {
-            getAnalytic(pixelIdSelected.pixel_Id, pixelIdSelected.T_id);
-            setAnalyiesStartDate("");
-            setAnalyiesEndDate("");
-        } else {
-            setAnalyiesStartDate(event[0].$d);
-            setAnalyiesEndDate(event[1].$d);
-            axioshttp
-                .post("/getTiktokAnalyticByRange", {
-                    pixelId: pixelIdSelected.pixel_Id,
-                    T_id: pixelIdSelected.T_id,
-                    start: event[0].$d,
-                    end: event[1].$d,
-                })
-                .then((res) => {
-                    setPixelAnalytics(res.data);
-                });
+    const [selectedPixelValue, setSelectedPixelValue] = useState(localStorage.getItem('pixel_id'));
+    const handleDateRange = () => {
+
+        if(selectedPixelValue!==""){
+             const eventValue = selectedPixelValue;
+
+            let arr = eventValue.split("/");
+                axioshttp
+                    .post("/getTiktokAnalyticByRange", {
+                        pixelId: arr[1],
+                        T_id: arr[0],
+                        start: analyiesStartDate,
+                        end: analyiesEndDate,
+                    })
+                    .then((res) => {
+                        setPixelAnalytics(res.data.countAnalyse);
+                        setPixelAnalyticsData(res.data.mergedData);
+                        localStorageData(eventValue,datePickerValue);
+                    });
         }
+       
     };
-    const [selectedPixelValue, setSelectedPixelValue] = useState(
-    );
+    
     const handlePixelId = (event) => {
         console.log("event Target", event);
         setSelectedPixelValue(event)
@@ -154,8 +162,38 @@ export default function Pixel() {
                 .then((res) => {
                     setPixelAnalytics(res.data.countAnalyse);
                     setPixelAnalyticsData(res.data.mergedData);
+                    localStorageData(eventValue,datePickerValue);
                 });
         }
+    };
+
+    const handleByLocalStorage = () => {
+        // var pixel_id = localStorage.getItem('pixel_id');
+        // var selectedStartDate = localStorage.getItem('seletedStartDate');
+        // var selectedEndDate = localStorage.getItem('seletedEndDate');
+
+        // setSelectedPixelValue(pixel_id);
+        // setAnalyiesStartDate(selectedStartDate);
+        // setAnalyiesEndDate(selectedEndDate);
+        setAnalyiesStartDate(datePickerValue.period.since);
+        setAnalyiesEndDate(datePickerValue.period.until);
+        const eventValue = selectedPixelValue;
+        console.log('start date in side local storage',datePickerValue);
+
+        let arr = eventValue.split("/");
+        
+            axioshttp
+                .post("/getTiktokAnalyticByRange", {
+                    T_id: arr[0],
+                    pixelId: arr[1],
+                    start: analyiesStartDate,
+                    end: analyiesEndDate,
+                })
+                .then((res) => {
+                    console.log('count analyes',res.data.countAnalyse)
+                    setPixelAnalytics(res.data.countAnalyse);
+                    setPixelAnalyticsData(res.data.mergedData);
+                });
     };
 
     useEffect(() => {
@@ -169,6 +207,25 @@ export default function Pixel() {
             setAnalyiesStartDate(datePickerValue.period.since);
             setAnalyiesEndDate(datePickerValue.period.until);
         }
+
+        const storedData = localStorage.getItem('selectedDateSlot');
+        const pixelID = localStorage.getItem('pixel_id');
+        const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
+        // if (retrievedObject && typeof retrievedObject === 'object') {
+        //     setDatePickerValue(retrievedObject);
+        //   }
+        //   if(pixelID!=null){
+        //     setSelectedPixelValue(pixelID)
+        //   }
+        
+        console.log('state Value Pixel',selectedPixelValue);
+        console.log('local Value Pixel',localStorage.getItem('pixel_id'));
+
+        if(localStorage.getItem('pixel_id')===selectedPixelValue){
+            console.log('i am here');
+            handleByLocalStorage();
+        }
+       
     }, [datePickerValue]);
 
     ////////////////End of Backend Code////////////
@@ -208,9 +265,9 @@ export default function Pixel() {
                 }
                 primaryAction={
                     <DateRangePicker
-                        datePickerValue={datePickerValue}
+                        // datePickerValue={datePickerValue}
                         setDatePickerValue={setDatePickerValue}
-                        onChange={handleDateRange}
+                        setOnChange={handleDateRange}
                     />
                 }
             >

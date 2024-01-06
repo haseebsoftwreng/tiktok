@@ -10,7 +10,6 @@ import {
     Card,
     ActionList,
     InlineStack,
-    Link,
     Text,
     Collapsible,
     Icon,
@@ -26,6 +25,7 @@ import {
     Box,
     Tooltip,
 } from "@shopify/polaris";
+import { useNavigate,Link,useParams  } from "react-router-dom";
 import { Tag, Autocomplete } from "@shopify/polaris";
 import React, { useState, useEffect } from "react";
 import { useCallback, useMemo } from "react";
@@ -39,8 +39,12 @@ import {
 import {
     QuestionMarkInverseMajor,
 } from "@shopify/polaris-icons";
+import { notification } from "antd";
 import axioshttp from "../../../httpaxios";
+const Context = React.createContext({ name: "Default" });
 function EditPixel() {
+    var pixelId = useParams();
+    const navigate = useNavigate();
     const [selectedOptions, setSelectedOptions] = useState(["rustic"]);
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
@@ -193,15 +197,7 @@ function EditPixel() {
     );
     const btnactivator = (
         <>
-            {/* <Button fullWidth onClick={togglePopoverActive} variant="primary">
-        Collections
-      </Button> */}
-            {/* <Button
-        variant="primary"
-        onClick={() => toggleActive("popover1")}
-        icon={ChevronDownMinor}
-        accessibilityLabel="Other save actions"
-      /> */}
+         
             <Button
                 fullWidth
                 onClick={() => toggleActive("popover1")}
@@ -210,9 +206,7 @@ function EditPixel() {
                 Change
             </Button>
         </>
-        // <Button fullWidth onClick={togglePopoverActive} disclosure>
-        //   Collections
-        // </Button>
+      
     );
     // select Area
 
@@ -294,28 +288,59 @@ function EditPixel() {
         });
     };
     const [pixels, setP_pixels] = useState([]);
+    const [pixels_id, setPixelsId] = useState([]);
+
+    const [edit_pixels, setEdit_pixels] = useState('');
+
     //////////////////Get Pixels/////////////////////
     const pixelsGet = () => {
-        axioshttp.get("/getTikTokPixel").then((res) => {
-            setP_pixels(res.data);
+        axioshttp.post('/getTiktokPixelById',{id : pixelId}).then((res) => {
+            setPixelsId(res.data.id);
+            setEdit_pixels(res.data);
+            setSelected(res.data.type);
+            setTikTokPixelName(res.data.pixel_name);
+            setTikTokPixelId(res.data.pixel_id);
+            setEventCode(res.data.test_token);
+            setTokenValue(res.data.access_token);
+            setOptionsTag(res.data.tag != null ? JSON.parse(res.data.tag) : " ");
+            setOptioncollection(res.data.collection != null ? JSON.parse(res.data.collection) : " ");
+            // setInputs({
+            //     id : pixelId,
+            //     pixel_name : res.data.pixel_name,
+            //     pixel_id : res.data.pixel_id,
+            //     type : res.data.type,
+            //     Collection :res.data.collection != null ? JSON.parse(res.data.collection) : " " ,
+            //     tags : res.data.tag != null ? JSON.parse(res.data.tag) : " ",
+            //     access_token : res.data.access_token,
+            //     test_token : res.data.test_token,
+            //     utm_campaign : res.data.utm_campaign,
+            //     utm_source : res.data.utm_source,
+            //     utm_medium : res.data.utm_medium
+
+            // })
+        });  
+    }
+    const [api, contextHolder] = notification.useNotification();
+    const openNotificationSuccess = (notifyText) => {
+        console.log(notifyText);
+        api.success({
+            message: notifyText,
+            placement: "bottomRight",
+            duration: 2.5,
         });
     };
-    ////////////////////Create Pixel///////////////////
-    const createPixel = async () => {
+    const contextValue = useMemo(
+        () => ({
+            name: "Ant Design",
+        }),
+        []
+    );
+    const handleFormSubmit = async () => {
+
         try {
             let formData = new FormData();
-            console.log(tikTokPixelName);
-            console.log(tikTokPixelId);
-            console.log(selected);
-            console.log(tokenValue);
-            console.log(eventCode);
-            console.log(tikTokPixelName);
-            console.log(selectedOptions);
-
-            if (
-                typeof tikTokPixelName == "undefined" ||
-                tikTokPixelName !== ""
-            ) {
+            formData.append("id",pixels_id);
+            if (typeof tikTokPixelName == "undefined" || tikTokPixelName !== "") {
                 formData.append("pixel_name", tikTokPixelName);
             }
             if (tikTokPixelId !== "") {
@@ -330,132 +355,56 @@ function EditPixel() {
             if (eventCode !== "") {
                 formData.append("test_token", eventCode);
             }
-            // if (SourceValue !== "") {
-            //     formData.append("utm_source", SourceValue);
-            // }
-            // if (MediumValue !== "") {
-            //     formData.append("utm_medium", MediumValue);
-            // }
-            // if (CampaignValue !== "") {
-            //     formData.append("utm_campaign", CampaignValue);
-            // }
-            if (selectedOptions != null) {
-                if (selected === "Tags") {
-                    formData.append("tags", selectedOptions);
-                } else {
-                    formData.append("collections", selectedOptions);
-                }
+            
+            if (optionsTag != null) {
+                formData.append("tags", optionsTag);
             }
-            console.log(formData);
-            axioshttp
-                .post("/saveTiktokPixel", formData)
-                .then((res) => {
-                    // openNotification("bottomRight", "Error creating pixel");
-                    // setInputs({ type: "Entire Store" })
-                    // Setcontent(!content);
-                    console.log(res.data);
-                    pixelsGet();
-                    navigate("/tiktok");
-                })
-                .catch((error) => {
+            if (optionCollections != null) {
+                formData.append("collections", optionCollections);
+            }
+            console.log('Form Data will be here',formData);
+            axioshttp.post('/updateTiktokPixel',formData).then((res) => {
+                openNotificationSuccess("Pixel Edited Successfully");
+                pixelsGet();
+                navigate('/pixel/tiktok');
+            }).catch((error) => {
                     console.error("API Error:", error);
-                    openNotification("bottomRight", "Error creating pixel");
+                    openNotificationSuccess("Error creating pixel");
                 });
         } catch (error) {
             console.error("Form Submission Error:", error);
         }
     };
-
-    ///////////////Call When Page Render////////
+     
+    
     useEffect(() => {
         pixelsGet();
-        getCollections();
         getTags();
-        // openNotification(
-        //     "bottomRight",
-        //     "Pixel Created Successfully"
-        // );
-        // getUserPlans();
-    }, []);
+        getCollections();
+      }, []);
 
-    const handleStatus = (pixelId) => {
-        axioshttp
-            .post("/updateTiktokStatus", { id: pixelId })
-            .then((res) => {});
-    };
-
-    const getStatusBadge = (id, status) => (
-        // <label className="switch switch-green">
-        //     <input
-        //         type="checkbox"
-        //         defaultChecked={status == 1 ? true : false}
-        //         className="switch-input"
-        //         onChange={() => handleStatus(id)}
-        //     />
-        //     <span className="switch-label" data-on="On" data-off="Off"></span>
-        //     <span className="switch-handle"></span>
-        // </label>
-        <ButtonGroup variant="segmented">
-        <Button
-            pressed={isFirstButtonActive}
-            onClick={handleFirstButtonClick}
-        >
-            Off
-        </Button>
-        <Button
-            pressed={!isFirstButtonActive}
-            onClick={handleSecondButtonClick}
-        >
-            On
-        </Button>
-    </ButtonGroup>
-    );
-
-    const getConversionApiStatus = (access_token) => (
-        <Icon tone={access_token ? "success" : "default"} source={TickMinor} />
-    );
-
-    const getTestEventIdStatus = (test_token) => (
-        <Icon tone={test_token ? "success" : "default"} source={TickMinor} />
-    );
-    const [deletedPixelId, setDeletedPixelId] = useState("");
-    const getActionsButtons = (pixelId) => (
-        <InlineStack gap={100}>
-            {/* <Link to={`/editTikTokPixels/${pixelId}`}>
-                <Button icon={EditMajor}>Edit</Button>
-            </Link> */}
-            <Button onClick={() => setShow(true)} icon={EditMajor}>
-                    Edit
-            </Button>
-            <Button onClick={() => handleDelete(pixelId)} icon={DeleteMinor}>
-                Delete
-            </Button>
-        </InlineStack>
-    );
+  
 
     const handleDelete = (pixelId) => {
         toggleModal();
         setDeletedPixelId(pixelId);
     };
-
-    async function handleDeletePixel() {
-        await axioshttp
-            .post("/deleteTiktokPixel", { id: deletedPixelId })
-            .then(async (res) => {
-                toggleModal();
-                pixelsGet();
-            });
-        openNotification("bottomRight", "Pixel Deleted Successfully");
+    
+    const returnBack=()=>{
+        pixelsGet();
+        navigate('/pixel/tiktok');
     }
-
     //////////////////// End of Backend Functionality///////
 
     return (
         <>
                 <Page
-                    backAction={{ content: "Settings", onAction: showForm }}
-                    title="Create Pixel"
+                    backAction={{ content: "Settings", onAction: returnBack }}
+                    title="Edit Pixel"
                 >
+                    <Context.Provider value={contextValue}>
+                        {contextHolder}
+                    </Context.Provider>
                     <Box>
                        
                         <Layout>
@@ -487,7 +436,7 @@ function EditPixel() {
                                                                             Name{" "}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Pixel Name is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -518,7 +467,7 @@ function EditPixel() {
                                                                             ID
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Pixel Id is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -547,7 +496,7 @@ function EditPixel() {
                                                                             Area
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Select Target Area."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -659,7 +608,7 @@ function EditPixel() {
                                                                             Token
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Access Token is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -690,7 +639,7 @@ function EditPixel() {
                                                                             Code
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Test Token is Optional."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -720,18 +669,18 @@ function EditPixel() {
                                 </div>
                             </Layout.Section>
                         </Layout>
-
+                        
                         <Box as="div" className=" dis-center">
                             <div className="dis-center">
                                 <Button
                                     variant="primary"
                                     onClick={() => {
-                                        createPixel();
+                                        handleFormSubmit();
                                         showForm();
                                     }}
                                 >
                                     {" "}
-                                    Add Pixel
+                                    Update Pixel
                                 </Button>
                             </div>
                         </Box>

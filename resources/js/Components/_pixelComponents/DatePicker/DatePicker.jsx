@@ -18,7 +18,7 @@ import {
 } from "@shopify/polaris";
 
 import { CalendarMinor, ArrowRightMinor } from "@shopify/polaris-icons";
-export default function DateRangePicker({Iconvalue,text,datePickerValue,setDatePickerValue}) {
+export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePickerValue}) {
   const { mdDown, lgUp } = useBreakpoints();
   const shouldShowMultiMonth = lgUp;
   const today = new Date(new Date().setHours(0, 0, 0, 0));
@@ -85,6 +85,12 @@ export default function DateRangePicker({Iconvalue,text,datePickerValue,setDateP
 
   useEffect(()=>{
     setDatePickerValue(activeDateRange)
+    // if(activeDateRange.title=='Today' ||activeDateRange.title=='Yesterday' ||activeDateRange.title=='Last 7 days' ||activeDateRange.title=='Last 15 days'||activeDateRange.title=='Last 30 days'){
+    //  setPopoverActive(false);
+    //  setOnChange()
+    // }
+    // console.log('here is the active Range',activeDateRange.title)
+
   },[activeDateRange]);
   function isDate(date) {
     return !isNaN(new Date(date).getDate());
@@ -200,6 +206,7 @@ export default function DateRangePicker({Iconvalue,text,datePickerValue,setDateP
     setActiveDateRange(newDateRange);
   }
   function apply() {
+    setOnChange()
     setPopoverActive(false);
   }
   function cancel() {

@@ -10,7 +10,6 @@ import {
     Card,
     ActionList,
     InlineStack,
-    Link,
     Text,
     Collapsible,
     Icon,
@@ -25,10 +24,14 @@ import {
     ChoiceList,
     Box,
     Tooltip,
+    SkeletonBodyText,
+    SkeletonThumbnail,
 } from "@shopify/polaris";
+import { ToastContainer, toast } from 'react-toastify';
+import { Link,useParams  } from "react-router-dom";
+import { notification } from "antd";
 import { Tag, Autocomplete } from "@shopify/polaris";
-import React, { useState, useEffect } from "react";
-import { useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
     TickMinor,
     MobileCancelMajor,
@@ -44,7 +47,13 @@ import {
 } from "@shopify/polaris-icons";
 import { ChevronDownMinor } from "@shopify/polaris-icons";
 import axioshttp from "../../../httpaxios";
+import TableSkeleton from "../../../Components/_pixelComponents/TableSkeleton";
+const Context = React.createContext({ name: "Default" });
+
 function PixelTable() {
+    const [api, contextHolder] = notification.useNotification();
+    const notify = () => toast("This is a toast notification !");
+    // const [messageApi, contextHolder2] = message.useMessage();
     const [selectedOptions, setSelectedOptions] = useState(["rustic"]);
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
@@ -52,7 +61,7 @@ function PixelTable() {
     const [value, setValue] = useState("Search Here");
     // tiktok pixel name  value
     const [tikTokPixelName, setTikTokPixelName] = useState("");
-
+    const [test, settest] = useState(false);
     const handleTiktokPixelNameChange = useCallback(
         (value) => setTikTokPixelName(value),
         []
@@ -176,9 +185,7 @@ function PixelTable() {
     );
 
     const [popoverActive, setPopoverActive] = useState(false);
-    const ctmoption = () => {
-        console.log(selected);
-    };
+    
 
     const togglePopoverActive = useCallback(
         () => setPopoverActive((popoverActive) => !popoverActive),
@@ -225,16 +232,13 @@ function PixelTable() {
 
         if (value[0] === "Collections") {
             togglePopoverActive();
-            console.log("sdfjh");
         }
     }, []);
 
     const handleSelectTargetAreaChange = useCallback((value) => {
         setSelected(value);
-        console.log(value);
         if (value === "Collections") {
             togglePopoverActive();
-            console.log("sdfjh");
         }
     }, []);
 
@@ -279,149 +283,8 @@ function PixelTable() {
         []
     );
 
-    const rows = [
-        [
-            <ButtonGroup variant="segmented">
-                <Button
-                    pressed={isFirstButtonActive}
-                    onClick={handleFirstButtonClick}
-                >
-                    Off
-                </Button>
-                <Button
-                    pressed={!isFirstButtonActive}
-                    onClick={handleSecondButtonClick}
-                >
-                    On
-                </Button>
-            </ButtonGroup>,
-            "test",
-            "798798",
-            "enteir store",
-            <div>
-                {!showInlineToken ? (
-                    <Button
-                        onClick={() => setshowInlineToken(true)}
-                        ariaControls="basic-collapsible"
-                    >
-                        Setup
-                    </Button>
-                ) : (
-                    <div
-                        style={{
-                            position: "absolute",
-                            zIndex: 1,
-                            width: "45%",
-                        }}
-                    >
-                        <Card padding="100">
-                            <TextField
-                                fullWidth
-                                type="text"
-                                value={textFieldInlineToken}
-                                onChange={handleTextFieldChangeInlineToken}
-                                autoComplete="off"
-                                connectedRight={
-                                    <InlineStack gap="400">
-                                        <Button
-                                            onClick={() =>
-                                                setshowInlineToken(false)
-                                            }
-                                            variant="plain"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            onClick={() =>
-                                                setshowInlineToken(false)
-                                            }
-                                            variant="primary"
-                                        >
-                                            save
-                                        </Button>
-                                    </InlineStack>
-                                }
-                            />
-                        </Card>
-                    </div>
-                )}
-            </div>,
-            <Icon source={TickMinor} />,
-            <InlineStack gap={200}>
-                <Button onClick={() => setShow(true)} icon={EditMajor}>
-                    Edit
-                </Button>
-                <Button onClick={toggleModal} icon={DeleteMinor}>
-                    Delete
-                </Button>
-            </InlineStack>,
-        ],
-        [
-            <ButtonGroup variant="segmented">
-                <Button
-                    pressed={isFirstButtonActive}
-                    onClick={handleFirstButtonClick}
-                >
-                    Off
-                </Button>
-                <Button
-                    pressed={!isFirstButtonActive}
-                    onClick={handleSecondButtonClick}
-                >
-                    On
-                </Button>
-            </ButtonGroup>,
-            "test",
-            "798798",
-            "enteir store",
-            <Icon source={MobileCancelMajor} />,
-            <Icon source={TickMinor} />,
-            <InlineStack gap={200}>
-                <Button onClick={() => setShow(true)} icon={EditMajor}>
-                    Edit
-                </Button>
-                <Button onClick={toggleModal} icon={DeleteMinor}>
-                    Delete
-                </Button>
-            </InlineStack>,
-        ],
-        [
-            <ButtonGroup variant="segmented">
-                <Button
-                    pressed={isFirstButtonActive}
-                    onClick={handleFirstButtonClick}
-                >
-                    Off
-                </Button>
-                <Button
-                    pressed={!isFirstButtonActive}
-                    onClick={handleSecondButtonClick}
-                >
-                    On
-                </Button>
-            </ButtonGroup>,
-            "test",
-            "798798",
-            "enteir store",
-            <Icon source={MobileCancelMajor} />,
-            <Icon source={TickMinor} />,
-            <InlineStack gap={200}>
-                <Button onClick={() => setShow(true)} icon={EditMajor}>
-                    Edit
-                </Button>
-                <Button onClick={toggleModal} icon={DeleteMinor}>
-                    Delete
-                </Button>
-            </InlineStack>,
-        ],
-    ];
-
-    //////////////////// Backend Functionality//////////////
-    ////////////// Shop Collection//////
     const getCollections = () => {
-        console.log(" iam going here ");
         axioshttp.get("/getCollections").then((res) => {
-            console.log(res.data);
             setOptioncollection(res.data);
         });
     };
@@ -429,7 +292,6 @@ function PixelTable() {
     //////////// Shop Tags//////////////
     const getTags = () => {
         axioshttp.get("/getTags").then((res) => {
-            console.log(res.data);
             setOptionsTag(res.data.tags);
         });
     };
@@ -440,18 +302,59 @@ function PixelTable() {
             setP_pixels(res.data);
         });
     };
+
+    const getPixelPage = () => {
+        settest(true);
+        axioshttp.get("/getTikTokPixel").then((res) => {
+            setP_pixels(res.data);
+            settest(false);
+        });
+    };
     ////////////////////Create Pixel///////////////////
+    const openNotificationSuccess = (notifyText) => {
+        console.log(notifyText);
+        api.success({
+            message: notifyText,
+            placement: "bottomRight",
+            duration: 2.5,
+        });
+    };
+
+    const openNotificationWarning = (notifyText1) => {
+        console.log('sdsdsds');
+        api.warning({
+            message: notifyText1,
+            placement: "bottomRight",
+            duration: 2.0,
+        });
+    };
+    const contextValue = useMemo(
+        () => ({
+            name: "Ant Design",
+        }),
+        []
+    );
+    // const success = (d, text) => {
+    //     messageApi.open({
+    //         style: {
+    //             position: "absolute",
+    //             top: "80vh",
+    //             left: "40%",
+    //         },
+    //         duration: 3,
+    //         type: "success",
+    //         content: text,
+    //     });
+    // };
     const createPixel = async () => {
         try {
             let formData = new FormData();
-            console.log(tikTokPixelName);
-            console.log(tikTokPixelId);
-            console.log(selected);
-            console.log(tokenValue);
-            console.log(eventCode);
-            console.log(tikTokPixelName);
-            console.log(selectedOptions);
-
+            if(typeof tikTokPixelName == "undefined" ||
+            tikTokPixelName == ""){
+                console.log('i am here');
+                openNotificationSuccess('Pixel Name is Required');
+                return
+            }
             if (
                 typeof tikTokPixelName == "undefined" ||
                 tikTokPixelName !== ""
@@ -486,44 +389,49 @@ function PixelTable() {
                     formData.append("collections", selectedOptions);
                 }
             }
-            console.log(formData);
             axioshttp
                 .post("/saveTiktokPixel", formData)
                 .then((res) => {
-                    // openNotification("bottomRight", "Error creating pixel");
-                    // setInputs({ type: "Entire Store" })
-                    // Setcontent(!content);
-                    console.log(res.data);
+                    handleTiktokPixelNameChange("");
+                    handleTikTokPixelIdChange("");
+                    handleSelectTargetAreaChange("Entire Store");
+                    handleTokenValueChange("");
+                    handleEventCodeChange("");
+                    openNotificationSuccess(
+                        "Pixel Created Successfully"
+                    );
                     pixelsGet();
-                    navigate("/tiktok");
+                    
+                    // navigate("/tiktok");
                 })
                 .catch((error) => {
                     console.error("API Error:", error);
-                    openNotification("bottomRight", "Error creating pixel");
+                    openNotificationSuccess("Error creating pixel");
                 });
         } catch (error) {
             console.error("Form Submission Error:", error);
         }
     };
 
-    const handleSearchBar = () =>{
+    const handleSearchBar = (event) => {
         // if (event.key === 'Enter' || event.keyCode === 13) {
-            console.log('i am here');
-            if(value != ""){
-                axioshttp.post('/getTiktoPixelBySearch',{string : value}).then((res) => {
+        if (value != "") {
+            axioshttp
+                .post("/getTiktoPixelBySearch", { string: value })
+                .then((res) => {
                     setP_pixels(res.data);
-                  })
-            }else {
-                pixelsGet();
-            }
+                });
+        } else {
+            pixelsGet();
+        }
         // }
-    }
+    };
     ///////////////Call When Page Render////////
     useEffect(() => {
-        pixelsGet();
+        getPixelPage();
         getCollections();
         getTags();
-        // openNotification(
+        // openNotificationSuccess(
         //     "bottomRight",
         //     "Pixel Created Successfully"
         // );
@@ -531,9 +439,9 @@ function PixelTable() {
     }, []);
 
     const handleStatus = (pixelId) => {
-        axioshttp
-            .post("/updateTiktokStatus", { id: pixelId })
-            .then((res) => {});
+        axioshttp.post("/updateTiktokStatus", { id: pixelId }).then((res) => {
+            pixelsGet();
+        });
     };
 
     const getStatusBadge = (id, status) => (
@@ -548,19 +456,13 @@ function PixelTable() {
         //     <span className="switch-handle"></span>
         // </label>
         <ButtonGroup variant="segmented">
-        <Button
-            pressed={isFirstButtonActive}
-            onClick={handleFirstButtonClick}
-        >
-            Off
-        </Button>
-        <Button
-            pressed={!isFirstButtonActive}
-            onClick={handleSecondButtonClick}
-        >
-            On
-        </Button>
-    </ButtonGroup>
+            <Button pressed={status == false} onClick={() => handleStatus(id)}>
+                Off
+            </Button>
+            <Button pressed={status == true} onClick={() => handleStatus(id)}>
+                On
+            </Button>
+        </ButtonGroup>
     );
 
     const getConversionApiStatus = (access_token) => (
@@ -573,12 +475,12 @@ function PixelTable() {
     const [deletedPixelId, setDeletedPixelId] = useState("");
     const getActionsButtons = (pixelId) => (
         <InlineStack gap={100}>
-            {/* <Link to={`/editTikTokPixels/${pixelId}`}>
+            <Link to={`/pixel/edittiktokpixels/${pixelId}`}>
                 <Button icon={EditMajor}>Edit</Button>
-            </Link> */}
-            <Button onClick={() => setShow(true)} icon={EditMajor}>
-                    Edit
-            </Button>
+            </Link>
+            {/* <Button onClick={() => setShow(true)} icon={EditMajor}>
+                Edit
+            </Button> */}
             <Button onClick={() => handleDelete(pixelId)} icon={DeleteMinor}>
                 Delete
             </Button>
@@ -597,11 +499,10 @@ function PixelTable() {
                 toggleModal();
                 pixelsGet();
             });
-        openNotification("bottomRight", "Pixel Deleted Successfully");
+            openNotificationSuccess("Pixel Deleted Successfully");
     }
 
     //////////////////// End of Backend Functionality///////
-
     return (
         <>
             {show == false ? (
@@ -616,7 +517,7 @@ function PixelTable() {
                                 labelHidden
                                 value={value}
                                 onChange={handleChange}
-                                onKeyUp = {handleSearchBar}
+                                onKeyUp={handleSearchBar}
                                 autoComplete="off"
                             />
                             <Button variant="primary" onClick={showForm}>
@@ -626,41 +527,49 @@ function PixelTable() {
                     </div>
 
                     <Card>
-                        <DataTable
-                            columnContentTypes={[
-                                "text",
-                                "text",
-                                "text",
-                                "text",
-                                "jsx",
-                                "jsx",
-                                "jsx",
-                            ]}
-                            headings={[
-                                "Status",
-                                "Pixel Name",
-                                "Pixel ID",
-                                "Target Area",
-                                "Server Side",
-                                "Test Events",
-                                "Actions",
-                            ]}
-                            rows={pixels.map((pixel) => [
-                                getStatusBadge(pixel.id, pixel.status),
-                                pixel.pixel_name,
-                                pixel.pixel_id,
-                                pixel.type,
-                                getConversionApiStatus(pixel.access_token),
-                                getTestEventIdStatus(pixel.test_token),
-                                getActionsButtons(pixel.id),
-                            ])}
-                            pagination={{
-                                hasNext: true,
-                                onNext: () => {},
-                            }}
-                            footerContent={`Showing ${pixels.length} of ${pixels.length} results`}
-                        />
+                        {test === true ? (
+                            // <SkeletonThumbnail size="small"/>
+                            <TableSkeleton/>
+                        ) : (
+                            <DataTable
+                                columnContentTypes={[
+                                    "text",
+                                    "text",
+                                    "text",
+                                    "text",
+                                    "jsx",
+                                    "jsx",
+                                    "jsx",
+                                ]}
+                                headings={[
+                                    "Status",
+                                    "Pixel Name",
+                                    "Pixel ID",
+                                    "Target Area",
+                                    "Server Side",
+                                    "Test Events",
+                                    "Actions",
+                                ]}
+                                rows={pixels.map((pixel) => [
+                                    getStatusBadge(pixel.id, pixel.status),
+                                    pixel.pixel_name,
+                                    pixel.pixel_id,
+                                    pixel.type,
+                                    getConversionApiStatus(pixel.access_token),
+                                    getTestEventIdStatus(pixel.test_token),
+                                    getActionsButtons(pixel.id),
+                                ])}
+                                pagination={{
+                                    hasNext: true,
+                                    onNext: () => {},
+                                }}
+                                footerContent={`Showing ${pixels.length} of ${pixels.length} results`}
+                            />
+                        )}
                     </Card>
+                    <Context.Provider value={contextValue}>
+                        {contextHolder}
+                    </Context.Provider>
                     <Modal
                         // activator={activator}
                         open={active}
@@ -689,69 +598,7 @@ function PixelTable() {
                     title="Create Pixel"
                 >
                     <Box>
-                        {/* <Card>
-              <FormLayout>
-                <FormLayout.Group>
-                  <TextField
-                    label="Pixel Name"
-                    value={fbPixelName}
-                    type="text"
-                    onChange={handleFbNameChange}
-                    selectTextOnFocus
-                    autoComplete="off"
-                  />
-
-                  <TextField
-                    label="Pixel ID"
-                    value={fbPixelId}
-                    onChange={handleFbIdChange}
-                    selectTextOnFocus
-                    autoComplete="off"
-                  />
-                </FormLayout.Group>
-                <FormLayout.Group>
-                  <Select
-                    label="Target Area"
-                    options={optionsArea}
-                    onChange={handleSelectChange}
-                    value={selected}
-                  />
-                </FormLayout.Group>
-                <FormLayout.Group>
-                  {selected === "Collections" || selected === "Tags" ? (
-                    <>
-                      <div className="hide-scroll">
-                        <Autocomplete
-                          allowMultiple
-                          options={options}
-                          selected={selectedOptions}
-                          textField={textField}
-                          onSelect={setSelectedOptions}
-                          listTitle="Suggested Tags"
-                        />
-                      </div>
-                    </>
-                  ) : null}
-                </FormLayout.Group>
-                <FormLayout.Group>
-                  <TextField
-                    label="Access Token"
-                    value={TokenValue}
-                    type="text"
-                    onChange={handleTokenValueChange}
-                    selectTextOnFocus
-                    autoComplete="off"
-                  />
-                  <TextField
-                    label="Test Event Code"
-                    value={EventCode}
-                    onChange={handleEventCodeChange}
-                    selectTextOnFocus
-                    autoComplete="off"
-                  />
-                </FormLayout.Group>
-              </FormLayout>
-            </Card> */}
+                       
                         <Layout>
                             <Layout.Section>
                                 <div className="">
@@ -781,7 +628,7 @@ function PixelTable() {
                                                                             Name{" "}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                           content="Pixel Name is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -802,6 +649,7 @@ function PixelTable() {
                                                                 }
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
 
                                                             <TextField
@@ -812,7 +660,7 @@ function PixelTable() {
                                                                             ID
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Pixel Id is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -832,6 +680,7 @@ function PixelTable() {
                                                                 }
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
                                                             <Select
                                                                 label={
@@ -841,7 +690,7 @@ function PixelTable() {
                                                                             Area
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Select Target Area."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -953,7 +802,7 @@ function PixelTable() {
                                                                             Token
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="This order has shipping labels."
+                                                                            content="Access Token is Required."
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -974,6 +823,7 @@ function PixelTable() {
                                                                 }
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
                                                             <TextField
                                                                 label={
@@ -1025,7 +875,7 @@ function PixelTable() {
                                     }}
                                 >
                                     {" "}
-                                    Add Pixel
+                                    Create Pixel
                                 </Button>
                             </div>
                         </Box>
