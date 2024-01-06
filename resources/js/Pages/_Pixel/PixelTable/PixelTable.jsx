@@ -27,7 +27,8 @@ import {
     SkeletonBodyText,
     SkeletonThumbnail,
 } from "@shopify/polaris";
-import { ToastContainer, toast } from 'react-toastify';
+import { toast} from 'react-toastify';
+import {Frame, ContextualSaveBar} from '@shopify/polaris';
 import { Link,useParams  } from "react-router-dom";
 import { notification } from "antd";
 import { Tag, Autocomplete } from "@shopify/polaris";
@@ -52,9 +53,8 @@ const Context = React.createContext({ name: "Default" });
 
 function PixelTable() {
     const [api, contextHolder] = notification.useNotification();
-    const notify = () => toast("This is a toast notification !");
     // const [messageApi, contextHolder2] = message.useMessage();
-    const [selectedOptions, setSelectedOptions] = useState(["rustic"]);
+    const [selectedOptions, setSelectedOptions] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
     const [show, setShow] = useState(false);
@@ -66,6 +66,7 @@ function PixelTable() {
         (value) => setTikTokPixelName(value),
         []
     );
+    
     // tiktok pixel name  Id
     const [tikTokPixelId, setTikTokPixelId] = useState("");
 
@@ -158,7 +159,7 @@ function PixelTable() {
             onChange={updateText}
             label={`Select ${selected}`}
             value={inputValue}
-            placeholder="Vintage, cotton, summer"
+            placeholder={selected === "Collections" ? "Select Collection" : "Select Tags"}
             verticalContent={verticalContentMarkup}
             autoComplete="off"
         />
@@ -237,6 +238,7 @@ function PixelTable() {
 
     const handleSelectTargetAreaChange = useCallback((value) => {
         setSelected(value);
+        setSelectedOptions("");
         if (value === "Collections") {
             togglePopoverActive();
         }
@@ -311,48 +313,24 @@ function PixelTable() {
         });
     };
     ////////////////////Create Pixel///////////////////
-    const openNotificationSuccess = (notifyText) => {
-        console.log(notifyText);
-        api.success({
-            message: notifyText,
-            placement: "bottomRight",
-            duration: 2.5,
-        });
-    };
-
-    const openNotificationWarning = (notifyText1) => {
-        console.log('sdsdsds');
-        api.warning({
-            message: notifyText1,
-            placement: "bottomRight",
-            duration: 2.0,
-        });
-    };
-    const contextValue = useMemo(
-        () => ({
-            name: "Ant Design",
-        }),
-        []
-    );
-    // const success = (d, text) => {
-    //     messageApi.open({
-    //         style: {
-    //             position: "absolute",
-    //             top: "80vh",
-    //             left: "40%",
-    //         },
-    //         duration: 3,
-    //         type: "success",
-    //         content: text,
-    //     });
-    // };
+    
     const createPixel = async () => {
+        console.log('create Pixel')
         try {
             let formData = new FormData();
             if(typeof tikTokPixelName == "undefined" ||
             tikTokPixelName == ""){
-                console.log('i am here');
-                openNotificationSuccess('Pixel Name is Required');
+                toast.error("Pixel Name is Required!");
+                return
+            }
+            if(typeof tikTokPixelId == "undefined" ||
+            tikTokPixelId == ""){
+                toast.error("Pixel Id is Required!");
+                return
+            }
+            if(typeof tokenValue == "undefined" ||
+            tokenValue == ""){
+                toast.error("Access Token is Required!");
                 return
             }
             if (
@@ -397,19 +375,16 @@ function PixelTable() {
                     handleSelectTargetAreaChange("Entire Store");
                     handleTokenValueChange("");
                     handleEventCodeChange("");
-                    openNotificationSuccess(
-                        "Pixel Created Successfully"
-                    );
+                    toast.success("Pixel Created Successfully !");
                     pixelsGet();
-                    
-                    // navigate("/tiktok");
+                    navigate("/pixel/tiktok");
                 })
                 .catch((error) => {
                     console.error("API Error:", error);
-                    openNotificationSuccess("Error creating pixel");
+                    toast.error("Form Submission Error:", error);
                 });
         } catch (error) {
-            console.error("Form Submission Error:", error);
+            toast.error("Form Submission Error:", error);
         }
     };
 
@@ -440,21 +415,12 @@ function PixelTable() {
 
     const handleStatus = (pixelId) => {
         axioshttp.post("/updateTiktokStatus", { id: pixelId }).then((res) => {
+                toast.success("Pixel is Status Update")
             pixelsGet();
         });
     };
 
     const getStatusBadge = (id, status) => (
-        // <label className="switch switch-green">
-        //     <input
-        //         type="checkbox"
-        //         defaultChecked={status == 1 ? true : false}
-        //         className="switch-input"
-        //         onChange={() => handleStatus(id)}
-        //     />
-        //     <span className="switch-label" data-on="On" data-off="Off"></span>
-        //     <span className="switch-handle"></span>
-        // </label>
         <ButtonGroup variant="segmented">
             <Button pressed={status == false} onClick={() => handleStatus(id)}>
                 Off
@@ -501,7 +467,12 @@ function PixelTable() {
             });
             openNotificationSuccess("Pixel Deleted Successfully");
     }
-
+    // const [test, settest] = useState(false);
+    const [contactualBar, setContactualBar] = useState(false);
+     console.log(contactualBar);
+    // const contextualSaveBarStatus=(){
+        
+    // }
     //////////////////// End of Backend Functionality///////
     return (
         <>
@@ -559,17 +530,15 @@ function PixelTable() {
                                     getTestEventIdStatus(pixel.test_token),
                                     getActionsButtons(pixel.id),
                                 ])}
-                                pagination={{
-                                    hasNext: true,
-                                    onNext: () => {},
-                                }}
-                                footerContent={`Showing ${pixels.length} of ${pixels.length} results`}
+                                // pagination={{
+                                //     hasNext: true,
+                                //     onNext: () => {},
+                                // }}
+                                // footerContent={`Showing ${pixels.length} of ${pixels.length} results`}
                             />
                         )}
                     </Card>
-                    <Context.Provider value={contextValue}>
-                        {contextHolder}
-                    </Context.Provider>
+                    
                     <Modal
                         // activator={activator}
                         open={active}
@@ -593,6 +562,31 @@ function PixelTable() {
                     </Modal>
                 </>
             ) : (
+                // contactualBar == true ? (
+                    <>
+                    <div style={{height: '10px'}}>
+                    <Frame
+                      logo={{
+                        width: 86,
+                        contextualSaveBarSource:
+                          'https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png',
+                      }}
+                    >
+                      <ContextualSaveBar
+                        fullWidth
+                        message="Unsaved changes"
+                        saveAction={{
+                         onAction:() => {createPixel(),showForm()},
+                          loading: false,
+                          disabled: false,
+                        }}
+                        // discardAction={{
+                        //   onAction: () => console.log('add clear form logic'),
+                        // }}
+                      />
+                    </Frame>
+                    </div>
+                
                 <Page
                     backAction={{ content: "Settings", onAction: showForm }}
                     title="Create Pixel"
@@ -644,9 +638,7 @@ function PixelTable() {
                                                                     tikTokPixelName
                                                                 }
                                                                 type="text"
-                                                                onChange={
-                                                                    handleTiktokPixelNameChange
-                                                                }
+                                                                onChange={handleTiktokPixelNameChange}
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
                                                                 required
@@ -712,6 +704,7 @@ function PixelTable() {
                                                             />
                                                             {selected ===
                                                             "Tags" ? (
+                                                                // setSelectedOptions(""),
                                                                 <>
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
@@ -742,6 +735,7 @@ function PixelTable() {
                                                             ) : null}
                                                             {selected ===
                                                             "Collections" ? (
+                                                                // setSelectedOptions(""),
                                                                 <>
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
@@ -865,7 +859,7 @@ function PixelTable() {
                             </Layout.Section>
                         </Layout>
 
-                        <Box as="div" className=" dis-center">
+                        {/* <Box as="div" className=" dis-center">
                             <div className="dis-center">
                                 <Button
                                     variant="primary"
@@ -878,10 +872,12 @@ function PixelTable() {
                                     Create Pixel
                                 </Button>
                             </div>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Page>
+                </>
             )}
+           
         </>
     );
 }

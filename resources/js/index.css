@@ -309,6 +309,11 @@
     display: none;
   }
   .skulldata-first div {
+    width: 25px;
+    height: 25px;
+    border-radius: 3px !important;
+  }
+  .skulldata-firstItem div {
     width: 50px;
     height: 25px;
     border-radius: 3px !important;

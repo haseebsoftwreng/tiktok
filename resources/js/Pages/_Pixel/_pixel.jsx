@@ -221,10 +221,10 @@ export default function Pixel() {
         console.log('state Value Pixel',selectedPixelValue);
         console.log('local Value Pixel',localStorage.getItem('pixel_id'));
 
-        if(localStorage.getItem('pixel_id')===selectedPixelValue){
-            console.log('i am here');
-            handleByLocalStorage();
-        }
+        // if(localStorage.getItem('pixel_id')===selectedPixelValue){
+        //     console.log('i am here');
+        //     handleByLocalStorage();
+        // }
        
     }, [datePickerValue]);
 

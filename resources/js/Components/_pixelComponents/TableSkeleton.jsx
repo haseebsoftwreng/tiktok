@@ -18,7 +18,7 @@ export default function TableSkeleton() {
     {
       id: "1020",
       date: (
-        <span className="skulldata-first">
+        <span className="skulldata-firstItem">
           <SkeletonDisplayText size="large" />
         </span>
       ),
@@ -46,7 +46,7 @@ export default function TableSkeleton() {
     {
       id: "1020",
       date: (
-        <span className="skulldata-first">
+        <span className="skulldata-firstItem">
           <SkeletonDisplayText size="large" />
         </span>
       ),
@@ -74,7 +74,7 @@ export default function TableSkeleton() {
     {
       id: "1020",
       date: (
-        <span className="skulldata-first">
+        <span className="skulldata-firstItem">
           <SkeletonDisplayText size="large" />
         </span>
       ),
@@ -102,7 +102,7 @@ export default function TableSkeleton() {
     {
       id: "1020",
       date: (
-        <span className="skulldata-first">
+        <span className="skulldata-firstItem">
           <SkeletonDisplayText size="large" />
         </span>
       ),
