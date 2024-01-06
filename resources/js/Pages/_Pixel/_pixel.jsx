@@ -211,12 +211,12 @@ export default function Pixel() {
         const storedData = localStorage.getItem('selectedDateSlot');
         const pixelID = localStorage.getItem('pixel_id');
         const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
-        // if (retrievedObject && typeof retrievedObject === 'object') {
-        //     setDatePickerValue(retrievedObject);
-        //   }
-        //   if(pixelID!=null){
-        //     setSelectedPixelValue(pixelID)
-        //   }
+        if (retrievedObject && typeof retrievedObject === 'object') {
+            setDatePickerValue(retrievedObject);
+          }
+          if(pixelID!=null){
+            setSelectedPixelValue(pixelID)
+          }
         
         console.log('state Value Pixel',selectedPixelValue);
         console.log('local Value Pixel',localStorage.getItem('pixel_id'));
