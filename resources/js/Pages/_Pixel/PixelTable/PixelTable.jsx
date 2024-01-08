@@ -53,7 +53,6 @@ const Context = React.createContext({ name: "Default" });
 
 function PixelTable() {
     const [api, contextHolder] = notification.useNotification();
-    // const [messageApi, contextHolder2] = message.useMessage();
     const [selectedOptions, setSelectedOptions] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
@@ -315,7 +314,6 @@ function PixelTable() {
     ////////////////////Create Pixel///////////////////
     
     const createPixel = async () => {
-        console.log('create Pixel')
         try {
             let formData = new FormData();
             if(typeof tikTokPixelName == "undefined" ||
@@ -377,14 +375,14 @@ function PixelTable() {
                     handleEventCodeChange("");
                     toast.success("Pixel Created Successfully !");
                     pixelsGet();
-                    navigate("/pixel/tiktok");
+                    // navigate("/pixel/tiktok");
                 })
                 .catch((error) => {
                     console.error("API Error:", error);
                     toast.error("Form Submission Error:", error);
                 });
         } catch (error) {
-            toast.error("Form Submission Error:", error);
+            toast.error("Form  Submission Error:", error);
         }
     };
 
@@ -415,7 +413,7 @@ function PixelTable() {
 
     const handleStatus = (pixelId) => {
         axioshttp.post("/updateTiktokStatus", { id: pixelId }).then((res) => {
-                toast.success("Pixel is Status Update")
+                toast.success("Pixel Status Update")
             pixelsGet();
         });
     };
@@ -465,7 +463,7 @@ function PixelTable() {
                 toggleModal();
                 pixelsGet();
             });
-            openNotificationSuccess("Pixel Deleted Successfully");
+            toast.success("Pixel Deleted Successfully");
     }
     // const [test, settest] = useState(false);
     const [contactualBar, setContactualBar] = useState(false);

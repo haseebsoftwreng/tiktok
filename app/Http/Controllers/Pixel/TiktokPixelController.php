@@ -44,6 +44,7 @@ class TiktokPixelController extends Controller
         $shop = Auth::user();
         $collections = [];
         $custom_collection = $shop->api()->rest('GET', '/admin/custom_collections.json')['body']['custom_collections'];
+        
         $smart_collection = $shop->api()->rest('GET', '/admin/smart_collections.json')['body']['smart_collections'];
         if (count($custom_collection) > 0) {
             foreach ($custom_collection as $data) {

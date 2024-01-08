@@ -25,7 +25,7 @@ export default function Pixel() {
 
     ///////////////////////Backend Code////////////
     const [pixels, setPixels] = useState([]);
-    const [datePickerValue, setDatePickerValue] = useState(JSON.parse(localStorage.getItem('selectedDateSlot')));
+    const [datePickerValue, setDatePickerValue] = useState();
     const [analyiesStartDate, setAnalyiesStartDate] = useState();
     const [analyiesEndDate, setAnalyiesEndDate] = useState();
     const [pixelAnalytics, setPixelAnalytics] = useState("");
@@ -207,24 +207,27 @@ export default function Pixel() {
             setAnalyiesStartDate(datePickerValue.period.since);
             setAnalyiesEndDate(datePickerValue.period.until);
         }
-
-        const storedData = localStorage.getItem('selectedDateSlot');
-        const pixelID = localStorage.getItem('pixel_id');
-        const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
-        if (retrievedObject && typeof retrievedObject === 'object') {
-            setDatePickerValue(retrievedObject);
-          }
-          if(pixelID!=null){
-            setSelectedPixelValue(pixelID)
-          }
         
-        console.log('state Value Pixel',selectedPixelValue);
+        // const storedData = localStorage.getItem('selectedDateSlot');
+        // const pixelID = localStorage.getItem('pixel_id');
+        // const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
+        // if (retrievedObject && typeof retrievedObject === 'object') {
+        //     setDatePickerValue(retrievedObject);
+        //   }
+        //   if(pixelID!=null){
+        //     setSelectedPixelValue(pixelID)
+        //   }
+        
+        console.log('updated value Pixel',JSON.parse(localStorage.getItem('selectedDateSlot')));
         console.log('local Value Pixel',localStorage.getItem('pixel_id'));
+        console.log('djsidjsidsijdisdjisdisdisjdijsidjsidjisdisjdisjdisidsi');
+        console.log('updated value Pixel',selectedPixelValue);
+        console.log('local Value Pixel',datePickerValue);
 
-        // if(localStorage.getItem('pixel_id')===selectedPixelValue){
-        //     console.log('i am here');
-        //     handleByLocalStorage();
-        // }
+        if(localStorage.getItem('pixel_id')===selectedPixelValue){
+            console.log('i am here');
+            // handleByLocalStorage();
+        }
        
     }, [datePickerValue]);
 
