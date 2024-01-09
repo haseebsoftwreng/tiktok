@@ -2,11 +2,18 @@ import React, { useState, useCallback } from "react";
 import { NavLink } from "react-router-dom";
 import { CashDollarMajor,AnalyticsMajor ,CheckoutMajor,SettingsMajor,PhoneMajor,TiktokMinor,StoreMajor,SimplifyMajor} from "@shopify/polaris-icons";
 import { Icon, Popover, ActionList, Divider, InlineStack, ButtonGroup,Button } from "@shopify/polaris";
-
+import { useTranslation } from "react-i18next";
 export default function PixelHeader() {
+  const {t} = useTranslation();
   const CurrentURl = window.location.href;
-  const Link = ['https://pixel.aipixels.app/pixel','https://pixel.aipixels.app/pixel/tiktok','https://pixel.aipixels.app/pixel/intrestfinder','https://pixel.aipixels.app/pixel/help','https://pixel.aipixels.app/pixel/faq',]
- 
+  const Link = ['https://de63-154-192-195-108.ngrok-free.app/pixel','https://de63-154-192-195-108.ngrok-free.app/pixel/tiktok','https://de63-154-192-195-108.ngrok-free.app/pixel/intrestfinder','https://de63-154-192-195-108.ngrok-free.app/pixel/help','https://pixel.aipixels.app/pixel/faq',]
+  // const Link = [
+  //   process.env.DOMAIN + '/pixel',
+  //   process.env.DOMAIN + '/pixel/tiktok',
+  //   process.env.DOMAIN + '/pixel/intrestfinder',
+  //   process.env.DOMAIN + '/pixel/help',
+  //   process.env.DOMAIN + '/pixel/faq',
+  //   ]
   const [activeItem, setActiveItem] = useState(
     function findIndexOfCurrentURL() {
       for (let i = 0; i < Link.length; i++) {
@@ -34,28 +41,30 @@ export default function PixelHeader() {
         source={AnalyticsMajor}
         tone="base"
       />
-        Analytics
+        {t('header.analytics')}
       </InlineStack>,
       <InlineStack className="navLink" gap={200}>
         <Icon
           source={TiktokMinor}
           tone="base"
         />
-        Pixels
+        {t('header.pixels')}
       </InlineStack>,
       <InlineStack className="navLink" gap={200}>
       <Icon
         source={CashDollarMajor}
         tone="base"
       />
-      Intrest Finder
+      
+      {t('header.interestFinder')}
     </InlineStack>,
       <InlineStack className="navLink" gap={200}>
         <Icon
           source={PhoneMajor}
           tone="base"
         />
-      Help Center
+      
+      {t('header.helpCenter')}
       </InlineStack>,
     
     <InlineStack className="navLink" gap={200}>
@@ -63,7 +72,7 @@ export default function PixelHeader() {
       source={CashDollarMajor}
       tone="base"
     />
-    Faq
+    {t('header.faq')}
   </InlineStack>
   ];
  

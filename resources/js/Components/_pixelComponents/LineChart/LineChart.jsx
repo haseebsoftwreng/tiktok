@@ -1,7 +1,9 @@
 import { LineChart, PolarisVizProvider } from "@shopify/polaris-viz";
 import "@shopify/polaris-viz/build/esm/styles.css";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 export default function LineGraphData(pixeldata, analatic) {
+    const {t} = useTranslation();
     const [Purchase, setPurchaseData] = useState([]);
     const [Checkout, setCheckoutData] = useState([]);
     const [ViewContent, setviewContentData] = useState([]);
@@ -11,27 +13,27 @@ export default function LineGraphData(pixeldata, analatic) {
     const polarisData = [
         {
             data: Purchase,
-            name: "Purchase",
+            name: t('graphPage.purchase'),
             color: "lightseagreen",
         },
         {
             data: Checkout,
-            name: "Checkout",
+            name: t('graphPage.checkout'),
             color: "lightgreen",
         },
         {
             data: ViewContent,
-            name: "C.View",
+            name: t('graphPage.contentView'),
             color: "lightpink",
         },
         {
             data: AddtoCart,
-            name: "Add to cart",
+            name: t('graphPage.addToCart'),
             color: "lightblue",
         },
         {
             data: Search,
-            name: "Search",
+            name: t('graphPage.search'),
             color: "purple",
         },
     ];

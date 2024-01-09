@@ -18,8 +18,10 @@ import {
 } from "@shopify/polaris";
 
 import { CalendarMinor, ArrowRightMinor } from "@shopify/polaris-icons";
+import { useTranslation } from "react-i18next";
 export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePickerValue}) {
   const { mdDown, lgUp } = useBreakpoints();
+  const {t} = useTranslation();
   const shouldShowMultiMonth = lgUp;
   const today = new Date(new Date().setHours(0, 0, 0, 0));
   const yesterday = new Date(
@@ -27,7 +29,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
   );
   const ranges = [
     {
-      title: "Today",
+      title: t('dataPicker.today'),
       alias: "today",
       period: {
         since: today,
@@ -35,7 +37,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       }
     },
     {
-      title: "Yesterday",
+      title: t('dataPicker.yesterDay'),
       alias: "yesterday",
       period: {
         since: yesterday,
@@ -43,7 +45,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       }
     },
     {
-      title: "Last 7 days",
+      title: t('dataPicker.lastSevenDays'),
       alias: "last7days",
       period: {
         since: new Date(
@@ -53,7 +55,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       }
     },
     {
-      title: "Last 15 days",
+      title: t('dataPicker.lastFiftyenDays'),
       alias: "last15days",
       period: {
         since: new Date(
@@ -63,7 +65,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       }
     },
     {
-      title: "Last 30 days",
+      title:  t('dataPicker.thirtyDays'),
       alias: "last30day",
       period: {
         since: new Date(
@@ -362,9 +364,9 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       <Popover.Pane fixed>
         <Popover.Section>
           <InlineStack align="end">
-            <Button onClick={cancel}>Cancel</Button>
+            <Button onClick={cancel}>{t('dataPicker.cancel')}</Button>
             <Button primary onClick={apply}>
-              Apply
+              {t('dataPicker.apply')}
             </Button>
           </InlineStack>
         </Popover.Section>

@@ -27,9 +27,9 @@ import {
     SkeletonBodyText,
     SkeletonThumbnail,
 } from "@shopify/polaris";
-import { toast} from 'react-toastify';
-import {Frame, ContextualSaveBar} from '@shopify/polaris';
-import { Link,useParams  } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Frame, ContextualSaveBar } from "@shopify/polaris";
+import { Link, useParams } from "react-router-dom";
 import { notification } from "antd";
 import { Tag, Autocomplete } from "@shopify/polaris";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
@@ -47,17 +47,19 @@ import {
     MobilePlusMajor,
 } from "@shopify/polaris-icons";
 import { ChevronDownMinor } from "@shopify/polaris-icons";
+import { useTranslation } from "react-i18next";
 import axioshttp from "../../../httpaxios";
 import TableSkeleton from "../../../Components/_pixelComponents/TableSkeleton";
 const Context = React.createContext({ name: "Default" });
 
 function PixelTable() {
+    const { t } = useTranslation();
     const [api, contextHolder] = notification.useNotification();
     const [selectedOptions, setSelectedOptions] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
     const [show, setShow] = useState(false);
-    const [value, setValue] = useState("Search Here");
+    const [value, setValue] = useState(t("pixelPage.searchHere"));
     // tiktok pixel name  value
     const [tikTokPixelName, setTikTokPixelName] = useState("");
     const [test, settest] = useState(false);
@@ -65,7 +67,7 @@ function PixelTable() {
         (value) => setTikTokPixelName(value),
         []
     );
-    
+
     // tiktok pixel name  Id
     const [tikTokPixelId, setTikTokPixelId] = useState("");
 
@@ -75,12 +77,8 @@ function PixelTable() {
     );
     // tiktok Access Token
     const [tokenValue, setTokenValue] = useState("");
-    const [SelectCollection, setSelectCollection] = useState("Entire Store");
     const [selected, setSelected] = useState("Entire Store");
     const [eventCode, setEventCode] = useState("");
-    const [SourceValue, setSourceValue] = useState("");
-    const [MediumValue, setMediumValue] = useState("");
-    const [CampaignValue, setCampaignValue] = useState("");
     const [optionsTag, setOptionsTag] = useState([]);
     const [optionCollections, setOptioncollection] = useState([]);
     const deselectedOptions = useMemo(
@@ -158,7 +156,9 @@ function PixelTable() {
             onChange={updateText}
             label={`Select ${selected}`}
             value={inputValue}
-            placeholder={selected === "Collections" ? "Select Collection" : "Select Tags"}
+            placeholder={
+                selected === "Collections" ? t('createPixelPage.suggestedCollection') : t('createPixelPage.suggestedTag')
+            }
             verticalContent={verticalContentMarkup}
             autoComplete="off"
         />
@@ -185,7 +185,6 @@ function PixelTable() {
     );
 
     const [popoverActive, setPopoverActive] = useState(false);
-    
 
     const togglePopoverActive = useCallback(
         () => setPopoverActive((popoverActive) => !popoverActive),
@@ -204,15 +203,6 @@ function PixelTable() {
     );
     const btnactivator = (
         <>
-            {/* <Button fullWidth onClick={togglePopoverActive} variant="primary">
-        Collections
-      </Button> */}
-            {/* <Button
-        variant="primary"
-        onClick={() => toggleActive("popover1")}
-        icon={ChevronDownMinor}
-        accessibilityLabel="Other save actions"
-      /> */}
             <Button
                 fullWidth
                 onClick={() => toggleActive("popover1")}
@@ -221,9 +211,7 @@ function PixelTable() {
                 Change
             </Button>
         </>
-        // <Button fullWidth onClick={togglePopoverActive} disclosure>
-        //   Collections
-        // </Button>
+    
     );
     // select Area
 
@@ -244,35 +232,14 @@ function PixelTable() {
     }, []);
 
     const targetArea = [
-        { label: "Entire Store", value: "Entire Store" },
-        { label: "Collections", value: "Collections" },
-        { label: "Tags", value: "Tags" },
+        { label: t("pixelPage.entireStore"), value: "Entire Store" },
+        { label: t("pixelPage.collection"), value: "Collections" },
+        { label: t("pixelPage.tag"), value: "Tags" },
     ];
     // tiktok   Test Event Code
 
     const handleEventCodeChange = useCallback(
         (value) => setEventCode(value),
-        []
-    );
-
-    // UTMS parageters
-    // Source
-
-    const handleSourceValueChange = useCallback(
-        (value) => setSourceValue(value),
-        []
-    );
-
-    // Medium
-
-    const handleMediumValueChange = useCallback(
-        (value) => setMediumValue(value),
-        []
-    );
-    // Campaign
-
-    const handleCampaignValueChange = useCallback(
-        (value) => setCampaignValue(value),
         []
     );
 
@@ -312,24 +279,24 @@ function PixelTable() {
         });
     };
     ////////////////////Create Pixel///////////////////
-    
+
     const createPixel = async () => {
         try {
             let formData = new FormData();
-            if(typeof tikTokPixelName == "undefined" ||
-            tikTokPixelName == ""){
-                toast.error("Pixel Name is Required!");
-                return
+            if (
+                typeof tikTokPixelName == "undefined" ||
+                tikTokPixelName == ""
+            ) {
+                toast.error(t('pixelPage.toast.error.pixelNameRequired'));
+                return;
             }
-            if(typeof tikTokPixelId == "undefined" ||
-            tikTokPixelId == ""){
-                toast.error("Pixel Id is Required!");
-                return
+            if (typeof tikTokPixelId == "undefined" || tikTokPixelId == "") {
+                toast.error(t('pixelPage.toast.error.pixelIdRequired'));
+                return;
             }
-            if(typeof tokenValue == "undefined" ||
-            tokenValue == ""){
-                toast.error("Access Token is Required!");
-                return
+            if (typeof tokenValue == "undefined" || tokenValue == "") {
+                toast.error(t('pixelPage.toast.error.pixelAccessTokenRequired'));
+                return;
             }
             if (
                 typeof tikTokPixelName == "undefined" ||
@@ -373,20 +340,20 @@ function PixelTable() {
                     handleSelectTargetAreaChange("Entire Store");
                     handleTokenValueChange("");
                     handleEventCodeChange("");
-                    toast.success("Pixel Created Successfully !");
+                    toast.success(t('pixelPage.toast.pixelCreate'));
                     pixelsGet();
                     // navigate("/pixel/tiktok");
                 })
                 .catch((error) => {
                     console.error("API Error:", error);
-                    toast.error("Form Submission Error:", error);
+                    toast.error(t('pixelPage.toast.error.formSubmit'), error);
                 });
         } catch (error) {
-            toast.error("Form  Submission Error:", error);
+            toast.error(t('pixelPage.toast.error.formSubmit'), error);
         }
     };
 
-    const handleSearchBar = (event) => {
+    const handleSearchBar = () => {
         // if (event.key === 'Enter' || event.keyCode === 13) {
         if (value != "") {
             axioshttp
@@ -404,16 +371,11 @@ function PixelTable() {
         getPixelPage();
         getCollections();
         getTags();
-        // openNotificationSuccess(
-        //     "bottomRight",
-        //     "Pixel Created Successfully"
-        // );
-        // getUserPlans();
     }, []);
 
     const handleStatus = (pixelId) => {
         axioshttp.post("/updateTiktokStatus", { id: pixelId }).then((res) => {
-                toast.success("Pixel Status Update")
+            toast.success(t("pixelPage.toast.pixelStatusUpdate"));
             pixelsGet();
         });
     };
@@ -421,10 +383,10 @@ function PixelTable() {
     const getStatusBadge = (id, status) => (
         <ButtonGroup variant="segmented">
             <Button pressed={status == false} onClick={() => handleStatus(id)}>
-                Off
+                {t("pixelPage.off")}
             </Button>
             <Button pressed={status == true} onClick={() => handleStatus(id)}>
-                On
+                {t("pixelPage.on")}
             </Button>
         </ButtonGroup>
     );
@@ -440,13 +402,10 @@ function PixelTable() {
     const getActionsButtons = (pixelId) => (
         <InlineStack gap={100}>
             <Link to={`/pixel/edittiktokpixels/${pixelId}`}>
-                <Button icon={EditMajor}>Edit</Button>
+                <Button icon={EditMajor}>{t("pixelPage.edit")}</Button>
             </Link>
-            {/* <Button onClick={() => setShow(true)} icon={EditMajor}>
-                Edit
-            </Button> */}
             <Button onClick={() => handleDelete(pixelId)} icon={DeleteMinor}>
-                Delete
+                {t("pixelPage.delete")}
             </Button>
         </InlineStack>
     );
@@ -463,13 +422,13 @@ function PixelTable() {
                 toggleModal();
                 pixelsGet();
             });
-            toast.success("Pixel Deleted Successfully");
+        toast.success(t("pixelPage.toast.deleteToast"));
     }
-    // const [test, settest] = useState(false);
+
     const [contactualBar, setContactualBar] = useState(false);
-     console.log(contactualBar);
+
     // const contextualSaveBarStatus=(){
-        
+
     // }
     //////////////////// End of Backend Functionality///////
     return (
@@ -482,7 +441,7 @@ function PixelTable() {
                             gap={400}
                         >
                             <TextField
-                                label="Store name"
+                                label={t("pixelPage.searchHere")}
                                 labelHidden
                                 value={value}
                                 onChange={handleChange}
@@ -490,7 +449,7 @@ function PixelTable() {
                                 autoComplete="off"
                             />
                             <Button variant="primary" onClick={showForm}>
-                                Add New Pixel
+                                {t("pixelPage.addNewPixel")}
                             </Button>
                         </InlineGrid>
                     </div>
@@ -498,7 +457,7 @@ function PixelTable() {
                     <Card>
                         {test === true ? (
                             // <SkeletonThumbnail size="small"/>
-                            <TableSkeleton/>
+                            <TableSkeleton />
                         ) : (
                             <DataTable
                                 columnContentTypes={[
@@ -511,13 +470,13 @@ function PixelTable() {
                                     "jsx",
                                 ]}
                                 headings={[
-                                    "Status",
-                                    "Pixel Name",
-                                    "Pixel ID",
-                                    "Target Area",
-                                    "Server Side",
-                                    "Test Events",
-                                    "Actions",
+                                    t("pixelPage.status"),
+                                    t("pixelPage.pixelName"),
+                                    t("pixelPage.pixelId"),
+                                    t("pixelPage.targetArea"),
+                                    t("pixelPage.serverSide"),
+                                    t("pixelPage.testEvent"),
+                                    t("pixelPage.action"),
                                 ]}
                                 rows={pixels.map((pixel) => [
                                     getStatusBadge(pixel.id, pixel.status),
@@ -528,336 +487,366 @@ function PixelTable() {
                                     getTestEventIdStatus(pixel.test_token),
                                     getActionsButtons(pixel.id),
                                 ])}
-                                // pagination={{
-                                //     hasNext: true,
-                                //     onNext: () => {},
-                                // }}
-                                // footerContent={`Showing ${pixels.length} of ${pixels.length} results`}
-                            />
+                           />
                         )}
                     </Card>
-                    
+
                     <Modal
-                        // activator={activator}
                         open={active}
                         onClose={toggleModal}
-                        title="Delete"
+                        title={t("pixelPage.delete")}
                         primaryAction={{
                             destructive: true,
-                            content: "Delete",
+                            content: t("pixelPage.delete"),
                             onAction: handleDeletePixel,
                         }}
                         secondaryActions={[
                             {
-                                content: "Cancel",
+                                content: t("pixelPage.cancel"),
                                 onAction: toggleModal,
                             },
                         ]}
                     >
                         <Modal.Section>
-                            Are you sure you want to delete this pixel?
+                        {t("pixelPage.deleteModelDescription")}
                         </Modal.Section>
                     </Modal>
                 </>
             ) : (
                 // contactualBar == true ? (
-                    <>
-                    <div style={{height: '10px'}}>
-                    <Frame
-                      logo={{
-                        width: 86,
-                        contextualSaveBarSource:
-                          'https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png',
-                      }}
-                    >
-                      <ContextualSaveBar
-                        fullWidth
-                        message="Unsaved changes"
-                        saveAction={{
-                         onAction:() => {createPixel(),showForm()},
-                          loading: false,
-                          disabled: false,
-                        }}
-                        // discardAction={{
-                        //   onAction: () => console.log('add clear form logic'),
-                        // }}
-                      />
-                    </Frame>
+                <>
+                    <div style={{ height: "10px" }}>
+                        <Frame
+                            logo={{
+                                width: 86,
+                                contextualSaveBarSource:
+                                    "https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png",
+                            }}
+                        >
+                            <ContextualSaveBar
+                                fullWidth
+                                message={t('createPixelPage.unsavedChanges')}
+                                saveAction={{
+                                    onAction: () => {
+                                        createPixel(), showForm();
+                                    },
+                                    content:t('createPixelPage.save'),
+                                    loading: false,
+                                    disabled: false,
+                                }}
+                                discardAction={{
+                                    content:t('createPixelPage.cancel'),
+                                    onAction: () =>{
+                                        showForm()
+                                    }
+                                        
+                                }}
+                            />
+                        </Frame>
                     </div>
-                
-                <Page
-                    backAction={{ content: "Settings", onAction: showForm }}
-                    title="Create Pixel"
-                >
-                    <Box>
-                       
-                        <Layout>
-                            <Layout.Section>
-                                <div className="">
-                                    <div>
-                                        <Layout>
-                                            <Layout.AnnotatedSection
-                                                id="Merchant Details"
-                                                title="Merchant Details"
-                                                description="Following are Details of Connected Tiktok Shop."
-                                            >
-                                                <Card sectioned>
-                                                    <InlineGrid
-                                                        columns={{ xs: 2 }}
-                                                    >
-                                                        <div className="dis-Last"></div>
-                                                    </InlineGrid>
-                                                    <div className="margtop10">
-                                                        <InlineGrid
-                                                            columns={{ xs: 1 }}
-                                                            gap={200}
-                                                        >
-                                                            <TextField
-                                                                label={
-                                                                    <InlineStack>
-                                                                        <span>
-                                                                            Pixel
-                                                                            Name{" "}
-                                                                        </span>
-                                                                        <Tooltip
-                                                                           content="Pixel Name is Required."
-                                                                            className="flex"
-                                                                        >
-                                                                            <Icon
-                                                                                source={
-                                                                                    QuestionMarkInverseMajor
-                                                                                }
-                                                                                tone="base"
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </InlineStack>
-                                                                }
-                                                                value={
-                                                                    tikTokPixelName
-                                                                }
-                                                                type="text"
-                                                                onChange={handleTiktokPixelNameChange}
-                                                                selectTextOnFocus
-                                                                autoComplete="off"
-                                                                required
-                                                            />
 
-                                                            <TextField
-                                                                label={
-                                                                    <InlineStack>
-                                                                        <span>
-                                                                            Pixel
-                                                                            ID
-                                                                        </span>
-                                                                        <Tooltip
-                                                                            content="Pixel Id is Required."
-                                                                            className="flex"
-                                                                        >
-                                                                            <Icon
-                                                                                source={
-                                                                                    QuestionMarkInverseMajor
-                                                                                }
-                                                                                tone="base"
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </InlineStack>
-                                                                }
-                                                                value={
-                                                                    tikTokPixelId
-                                                                }
-                                                                onChange={
-                                                                    handleTikTokPixelIdChange
-                                                                }
-                                                                selectTextOnFocus
-                                                                autoComplete="off"
-                                                                required
-                                                            />
-                                                            <Select
-                                                                label={
-                                                                    <InlineStack>
-                                                                        <span>
-                                                                            Target
-                                                                            Area
-                                                                        </span>
-                                                                        <Tooltip
-                                                                            content="Select Target Area."
-                                                                            className="flex"
-                                                                        >
-                                                                            <Icon
-                                                                                source={
-                                                                                    QuestionMarkInverseMajor
-                                                                                }
-                                                                                tone="base"
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </InlineStack>
-                                                                }
-                                                                options={
-                                                                    targetArea
-                                                                }
-                                                                onChange={
-                                                                    handleSelectTargetAreaChange
-                                                                }
-                                                                value={selected}
-                                                            />
-                                                            {selected ===
-                                                            "Tags" ? (
-                                                                // setSelectedOptions(""),
-                                                                <>
-                                                                    <div className="hide-scroll">
-                                                                        <Autocomplete
-                                                                            allowMultiple
-                                                                            options={optionsTag.map(
-                                                                                (
-                                                                                    option,
-                                                                                    index
-                                                                                ) => ({
-                                                                                    key: index,
-                                                                                    value: option,
-                                                                                    label: option,
-                                                                                })
-                                                                            )}
-                                                                            selected={
-                                                                                selectedOptions
-                                                                            }
-                                                                            textField={
-                                                                                textField
-                                                                            }
-                                                                            onSelect={
-                                                                                setSelectedOptions
-                                                                            }
-                                                                            listTitle="Suggested Tags"
-                                                                        />
-                                                                    </div>
-                                                                </>
-                                                            ) : null}
-                                                            {selected ===
-                                                            "Collections" ? (
-                                                                // setSelectedOptions(""),
-                                                                <>
-                                                                    <div className="hide-scroll">
-                                                                        <Autocomplete
-                                                                            allowMultiple
-                                                                            options={optionCollections.map(
-                                                                                (
-                                                                                    option,
-                                                                                    index
-                                                                                ) => ({
-                                                                                    key: index,
-                                                                                    value: option.handle,
-                                                                                    label: option.handle,
-                                                                                })
-                                                                            )}
-                                                                            selected={
-                                                                                selectedOptions
-                                                                            }
-                                                                            textField={
-                                                                                textField
-                                                                            }
-                                                                            onSelect={
-                                                                                setSelectedOptions
-                                                                            }
-                                                                            listTitle="Suggested Collection"
-                                                                        />
-                                                                    </div>
-                                                                </>
-                                                            ) : null}
-                                                        </InlineGrid>
-                                                    </div>
-                                                </Card>
-                                            </Layout.AnnotatedSection>
-                                        </Layout>
-                                    </div>
-                                    <div className="marginTop20">
-                                        <Layout>
-                                            <Layout.AnnotatedSection
-                                                id="Merchant Details"
-                                                title="Merchant Details"
-                                                description="Following are Details of Connected Tiktok Shop."
-                                            >
-                                                <Card sectioned>
-                                                    <InlineGrid
-                                                        columns={{ xs: 2 }}
-                                                    >
-                                                        <div className="dis-Last"></div>
-                                                    </InlineGrid>
-                                                    <div className="margtop10">
+                    <Page
+                        backAction={{ content: "Settings", onAction: showForm }}
+                        title={t("createPixelPage.title")}
+                    >
+                        <Box>
+                            <Layout>
+                                <Layout.Section>
+                                    <div className="">
+                                        <div>
+                                            <Layout>
+                                                <Layout.AnnotatedSection
+                                                    id="Merchant Details"
+                                                    title={t(
+                                                        "createPixelPage.merchantDetails"
+                                                    )}
+                                                    description={t(
+                                                        "createPixelPage.merchantDetailsText"
+                                                    )}
+                                                >
+                                                    <Card sectioned>
                                                         <InlineGrid
-                                                            columns={{ xs: 1 }}
-                                                            gap={200}
+                                                            columns={{ xs: 2 }}
                                                         >
-                                                            <TextField
-                                                                label={
-                                                                    <InlineStack>
-                                                                        <span>
-                                                                            Access
-                                                                            Token
-                                                                        </span>
-                                                                        <Tooltip
-                                                                            content="Access Token is Required."
-                                                                            className="flex"
-                                                                        >
-                                                                            <Icon
-                                                                                source={
-                                                                                    QuestionMarkInverseMajor
-                                                                                }
-                                                                                tone="base"
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </InlineStack>
-                                                                }
-                                                                value={
-                                                                    tokenValue
-                                                                }
-                                                                type="text"
-                                                                onChange={
-                                                                    handleTokenValueChange
-                                                                }
-                                                                selectTextOnFocus
-                                                                autoComplete="off"
-                                                                required
-                                                            />
-                                                            <TextField
-                                                                label={
-                                                                    <InlineStack>
-                                                                        <span>
-                                                                            Test
-                                                                            Event
-                                                                            Code
-                                                                        </span>
-                                                                        <Tooltip
-                                                                            content="This order has shipping labels."
-                                                                            className="flex"
-                                                                        >
-                                                                            <Icon
-                                                                                source={
-                                                                                    QuestionMarkInverseMajor
-                                                                                }
-                                                                                tone="base"
-                                                                            />
-                                                                        </Tooltip>
-                                                                    </InlineStack>
-                                                                }
-                                                                value={
-                                                                    eventCode
-                                                                }
-                                                                onChange={
-                                                                    handleEventCodeChange
-                                                                }
-                                                                selectTextOnFocus
-                                                                autoComplete="off"
-                                                            />
+                                                            <div className="dis-Last"></div>
                                                         </InlineGrid>
-                                                    </div>
-                                                </Card>
-                                            </Layout.AnnotatedSection>
-                                        </Layout>
-                                    </div>
-                                </div>
-                            </Layout.Section>
-                        </Layout>
+                                                        <div className="margtop10">
+                                                            <InlineGrid
+                                                                columns={{
+                                                                    xs: 1,
+                                                                }}
+                                                                gap={200}
+                                                            >
+                                                                <TextField
+                                                                    label={
+                                                                        <InlineStack>
+                                                                            <span>
+                                                                                {t(
+                                                                                    "createPixelPage.pixelName"
+                                                                                )}
+                                                                            </span>
+                                                                            <Tooltip
+                                                                                content={t(
+                                                                                    "createPixelPage.content.pixelNameToolTip"
+                                                                                )}
+                                                                                className="flex"
+                                                                            >
+                                                                                <Icon
+                                                                                    source={
+                                                                                        QuestionMarkInverseMajor
+                                                                                    }
+                                                                                    tone="base"
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </InlineStack>
+                                                                    }
+                                                                    value={
+                                                                        tikTokPixelName
+                                                                    }
+                                                                    type="text"
+                                                                    onChange={
+                                                                        handleTiktokPixelNameChange
+                                                                    }
+                                                                    selectTextOnFocus
+                                                                    autoComplete="off"
+                                                                    required
+                                                                />
 
-                        {/* <Box as="div" className=" dis-center">
+                                                                <TextField
+                                                                    label={
+                                                                        <InlineStack>
+                                                                            <span>
+                                                                                {t(
+                                                                                    "createPixelPage.pixelId"
+                                                                                )}
+                                                                            </span>
+                                                                            <Tooltip
+                                                                                content={t(
+                                                                                    "createPixelPage.content.pixelIdToolTip"
+                                                                                )}
+                                                                                className="flex"
+                                                                            >
+                                                                                <Icon
+                                                                                    source={
+                                                                                        QuestionMarkInverseMajor
+                                                                                    }
+                                                                                    tone="base"
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </InlineStack>
+                                                                    }
+                                                                    value={
+                                                                        tikTokPixelId
+                                                                    }
+                                                                    onChange={
+                                                                        handleTikTokPixelIdChange
+                                                                    }
+                                                                    selectTextOnFocus
+                                                                    autoComplete="off"
+                                                                    required
+                                                                />
+                                                                <Select
+                                                                    label={
+                                                                        <InlineStack>
+                                                                            <span>
+                                                                                {t(
+                                                                                    "createPixelPage.targetArea"
+                                                                                )}
+                                                                            </span>
+                                                                            <Tooltip
+                                                                                content={t(
+                                                                                    "createPixelPage.content.selectTargetAreaToolTip"
+                                                                                )}
+                                                                                className="flex"
+                                                                            >
+                                                                                <Icon
+                                                                                    source={
+                                                                                        QuestionMarkInverseMajor
+                                                                                    }
+                                                                                    tone="base"
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </InlineStack>
+                                                                    }
+                                                                    options={
+                                                                        targetArea
+                                                                    }
+                                                                    onChange={
+                                                                        handleSelectTargetAreaChange
+                                                                    }
+                                                                    value={
+                                                                        selected
+                                                                    }
+                                                                />
+                                                                {selected ===
+                                                                "Tags" ? (
+                                                                    // setSelectedOptions(""),
+                                                                    <>
+                                                                        <div className="hide-scroll">
+                                                                            <Autocomplete
+                                                                                allowMultiple
+                                                                                options={optionsTag.map(
+                                                                                    (
+                                                                                        option,
+                                                                                        index
+                                                                                    ) => ({
+                                                                                        key: index,
+                                                                                        value: option,
+                                                                                        label: option,
+                                                                                    })
+                                                                                )}
+                                                                                selected={
+                                                                                    selectedOptions
+                                                                                }
+                                                                                textField={
+                                                                                    textField
+                                                                                }
+                                                                                onSelect={
+                                                                                    setSelectedOptions
+                                                                                }
+                                                                                listTitle={t('createPixelPage.suggestedTag')}
+                                                                            />
+                                                                        </div>
+                                                                    </>
+                                                                ) : null}
+                                                                {selected ===
+                                                                "Collections" ? (
+                                                                    // setSelectedOptions(""),
+                                                                    <>
+                                                                        <div className="hide-scroll">
+                                                                            <Autocomplete
+                                                                                allowMultiple
+                                                                                options={optionCollections.map(
+                                                                                    (
+                                                                                        option,
+                                                                                        index
+                                                                                    ) => ({
+                                                                                        key: index,
+                                                                                        value: option.handle,
+                                                                                        label: option.handle,
+                                                                                    })
+                                                                                )}
+                                                                                selected={
+                                                                                    selectedOptions
+                                                                                }
+                                                                                textField={
+                                                                                    textField
+                                                                                }
+                                                                                onSelect={
+                                                                                    setSelectedOptions
+                                                                                }
+                                                                                listTitle={t('createPixelPage.suggestedCollection')}
+                                                                            />
+                                                                        </div>
+                                                                    </>
+                                                                ) : null}
+                                                            </InlineGrid>
+                                                        </div>
+                                                    </Card>
+                                                </Layout.AnnotatedSection>
+                                            </Layout>
+                                        </div>
+                                        <div className="marginTop20">
+                                            <Layout>
+                                                <Layout.AnnotatedSection
+                                                    id="Merchant Details"
+                                                    title={t(
+                                                        "createPixelPage.merchantDetails"
+                                                    )}
+                                                    description={t(
+                                                        "createPixelPage.merchantDetailsText"
+                                                    )}
+                                                >
+                                                    <Card sectioned>
+                                                        <InlineGrid
+                                                            columns={{ xs: 2 }}
+                                                        >
+                                                            <div className="dis-Last"></div>
+                                                        </InlineGrid>
+                                                        <div className="margtop10">
+                                                            <InlineGrid
+                                                                columns={{
+                                                                    xs: 1,
+                                                                }}
+                                                                gap={200}
+                                                            >
+                                                                <TextField
+                                                                    label={
+                                                                        <InlineStack>
+                                                                            <span>
+                                                                                {t(
+                                                                                    "createPixelPage.accessToken"
+                                                                                )}
+                                                                            </span>
+                                                                            <Tooltip
+                                                                                content={t(
+                                                                                    "createPixelPage.content.pixelAccessTokenToolTip"
+                                                                                )}
+                                                                                className="flex"
+                                                                            >
+                                                                                <Icon
+                                                                                    source={
+                                                                                        QuestionMarkInverseMajor
+                                                                                    }
+                                                                                    tone="base"
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </InlineStack>
+                                                                    }
+                                                                    value={
+                                                                        tokenValue
+                                                                    }
+                                                                    type="text"
+                                                                    onChange={
+                                                                        handleTokenValueChange
+                                                                    }
+                                                                    selectTextOnFocus
+                                                                    autoComplete="off"
+                                                                    required
+                                                                />
+                                                                <TextField
+                                                                    label={
+                                                                        <InlineStack>
+                                                                            <span>
+                                                                                {t(
+                                                                                    "createPixelPage.testEvent"
+                                                                                )}
+                                                                            </span>
+                                                                            <Tooltip
+                                                                                content={t(
+                                                                                    "createPixelPage.content.pixelEventCodeToolTip"
+                                                                                )}
+                                                                                className="flex"
+                                                                            >
+                                                                                <Icon
+                                                                                    source={
+                                                                                        QuestionMarkInverseMajor
+                                                                                    }
+                                                                                    tone="base"
+                                                                                />
+                                                                            </Tooltip>
+                                                                        </InlineStack>
+                                                                    }
+                                                                    value={
+                                                                        eventCode
+                                                                    }
+                                                                    onChange={
+                                                                        handleEventCodeChange
+                                                                    }
+                                                                    selectTextOnFocus
+                                                                    autoComplete="off"
+                                                                />
+                                                            </InlineGrid>
+                                                        </div>
+                                                    </Card>
+                                                </Layout.AnnotatedSection>
+                                            </Layout>
+                                        </div>
+                                    </div>
+                                </Layout.Section>
+                            </Layout>
+
+                            {/* <Box as="div" className=" dis-center">
                             <div className="dis-center">
                                 <Button
                                     variant="primary"
@@ -871,11 +860,10 @@ function PixelTable() {
                                 </Button>
                             </div>
                         </Box> */}
-                    </Box>
-                </Page>
+                        </Box>
+                    </Page>
                 </>
             )}
-           
         </>
     );
 }

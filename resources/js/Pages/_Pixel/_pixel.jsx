@@ -15,7 +15,10 @@ import LineGraphData from "../../Components/_pixelComponents/LineChart/LineChart
 import DateRangePicker from "../../Components/_pixelComponents/DatePicker/DatePicker";
 import { useCallback, useEffect } from "react";
 import axioshttp from "../../httpaxios";
+import { useTranslation } from "react-i18next";
+import { toast} from 'react-toastify';
 export default function Pixel() {
+    const {t} = useTranslation();
     // Api Data fetch  check
     const [test, settest] = useState(false);
 
@@ -33,7 +36,7 @@ export default function Pixel() {
     const [pixelIdSelected, setPixelIdSelected] = useState('');
     const orderReport = [
         {
-            heading: "Purchase",
+            heading: t('analyticsPages.purchase'),
             data:
                 pixelAnalytics != ""
                     ? pixelAnalytics.compeletePayment != null
@@ -44,7 +47,7 @@ export default function Pixel() {
                 "Including Clicks on the store affiliate link and product affilate link",
         },
         {
-            heading: "Initiate Checkout",
+            heading: t('analyticsPages.initiateCheckout'),
             data:
                 pixelAnalytics != ""
                     ? pixelAnalytics.initiateCheckout != null
@@ -55,7 +58,7 @@ export default function Pixel() {
                 "Including Clicks on the store affiliate link and product affilate link",
         },
         {
-            heading: "Add to Cart",
+            heading: t('analyticsPages.addToCart'),
             data:
                 pixelAnalytics != ""
                     ? pixelAnalytics.addtoCart != null
@@ -66,7 +69,7 @@ export default function Pixel() {
                 "Including Clicks on the store affiliate link and product affilate link",
         },
         {
-            heading: "Content View",
+            heading: t('analyticsPages.contentView'),
             data:
                 pixelAnalytics != ""
                     ? pixelAnalytics.viewContent != null
@@ -76,19 +79,19 @@ export default function Pixel() {
             helpinText:
                 "Including Clicks on the store affiliate link and product affilate link",
         },
+        // {
+        //     heading: "Page View",
+        //     data:
+        //         pixelAnalytics != ""
+        //             ? pixelAnalytics.pageView != null
+        //                 ? pixelAnalytics.pageView
+        //                 : "00"
+        //             : "00",
+        //     helpinText:
+        //         "Including Clicks on the store affiliate link and product affilate link",
+        // },
         {
-            heading: "Page View",
-            data:
-                pixelAnalytics != ""
-                    ? pixelAnalytics.pageView != null
-                        ? pixelAnalytics.pageView
-                        : "00"
-                    : "00",
-            helpinText:
-                "Including Clicks on the store affiliate link and product affilate link",
-        },
-        {
-            heading: "Search",
+            heading: t('analyticsPages.search'),
             data:
                 pixelAnalytics != ""
                     ? pixelAnalytics.search != null
@@ -123,8 +126,8 @@ export default function Pixel() {
 
     const [selectedPixelValue, setSelectedPixelValue] = useState(localStorage.getItem('pixel_id'));
     const handleDateRange = () => {
-
-        if(selectedPixelValue!==""){
+         
+        if(selectedPixelValue !== null && selectedPixelValue !== ""){
              const eventValue = selectedPixelValue;
 
             let arr = eventValue.split("/");
@@ -140,6 +143,8 @@ export default function Pixel() {
                         setPixelAnalyticsData(res.data.mergedData);
                         localStorageData(eventValue,datePickerValue);
                     });
+        }else{
+            toast.error(t('pixelPage.toast.error.pixelRequired'));
         }
        
     };
@@ -239,7 +244,7 @@ export default function Pixel() {
         <>
             <div className="margtop10">{/* <StarRating/> */}</div>
             <Page
-                title="Analytics"
+                title={t('analyticsPages.pageTitle')}
                 compactTitle
                 secondaryActions={
                     <div style={{ display: "flex" }}>
@@ -250,7 +255,7 @@ export default function Pixel() {
                                 {
                                   key: "default",
                                   value: "",
-                                  label: "Please select the pixel",
+                                  label: t('analyticsPages.selectPixel'),
                                   disabled: true,
                                 },
                                 ...pixels.map((option, index) => ({

@@ -16,12 +16,13 @@ import {
 import { SearchMinor } from "@shopify/polaris-icons";
 import React, { useCallback, useState, useEffect } from "react";
 import axioshttp from "../../../httpaxios";
-
+import { useTranslation } from "react-i18next";
 function IntrestFinder() {
     // Search value data
+    const {t} = useTranslation();
     const [csvData, setCsvData] = useState([]);
     const [copyText, setCopyText] = useState('');
-    const [value, setValue] = useState("Search Here");
+    const [value, setValue] = useState(t('interestFinderPage.searchHere'));
     const [searchResult, setSearchResult] = useState("");
     const [searchString, setSearchString] = useState("");
     const handleChange = useCallback((newValue) => setValue(newValue), []);
@@ -136,14 +137,14 @@ function IntrestFinder() {
             <div className="marginTop20">
                 <InlineGrid columns={["twoThirds", "oneThird"]} gap={400}>
                     <TextField
-                        label="Search Here"
+                        label={t('interestFinderPage.searchHere')}
                         labelHidden
                         value={value}
                         onChange={handleChange}
                         autoComplete="off"
                     />
                     <Button icon={SearchMinor} onClick={handleSearchResult}>
-                        Search
+                        {t('interestFinderPage.search')}
                     </Button>
                 </InlineGrid>
             </div>
@@ -155,13 +156,13 @@ function IntrestFinder() {
                             pressed={isFirstButtonActive}
                             onClick={handleFirstButtonClick}
                         >
-                            Interest
+                            {t('interestFinderPage.interest')}
                         </Button>
                         <Button
                             pressed={!isFirstButtonActive}
                             onClick={handleSecondButtonClick}
                         >
-                            Interest Suggestions
+                            {t('interestFinderPage.interestSuggested')}
                         </Button>
                     </ButtonGroup>
                 </div>
@@ -189,9 +190,11 @@ function IntrestFinder() {
                                                 <Button
                                                     onClick={handleCopyText}
                                                 >
-                                                    Copy
+                                                    {t('interestFinderPage.copy')}
+                                                 </Button>
+                                                <Button>
+                                                {t('interestFinderPage.download')}
                                                 </Button>
-                                                <Button>Download</Button>
                                             </ButtonGroup>
                                         </div>
                                     </>
@@ -212,13 +215,12 @@ function IntrestFinder() {
                                 ]}
                                 emptyState={[
                                     <EmptyState
-                                        heading="No Data found"
+                                        heading={t('interestFinderPage.data')}
                                         image="src/Images/download.svg"
                                         fullWidth
                                     >
                                         <p>
-                                            Try changing the filters or search
-                                            term
+                                            {t('interestFinderPage.description')}
                                         </p>
                                     </EmptyState>,
                                 ]}
@@ -244,8 +246,14 @@ function IntrestFinder() {
                                         <div style={{}}>
                                             {" "}
                                             <ButtonGroup variant="segmented">
-                                                <Button>Copy</Button>
-                                                <Button>Download</Button>
+                                            <Button
+                                                    onClick={handleCopyText}
+                                                >
+                                                    {t('interestFinderPage.copy')}
+                                                 </Button>
+                                                <Button>
+                                                {t('interestFinderPage.download')}
+                                                </Button>
                                             </ButtonGroup>
                                         </div>
                                     </>
@@ -266,13 +274,12 @@ function IntrestFinder() {
                                 ]}
                                 emptyState={[
                                     <EmptyState
-                                        heading="No Data found"
+                                        heading={t('interestFinderPage.data')}
                                         image="src/Images/download.svg"
                                         fullWidth
                                     >
                                         <p>
-                                            Try changing the filters or search
-                                            term
+                                            {t('interestFinderPage.description')}
                                         </p>
                                     </EmptyState>,
                                 ]}

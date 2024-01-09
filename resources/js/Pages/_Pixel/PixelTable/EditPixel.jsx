@@ -42,8 +42,11 @@ import {
 } from "@shopify/polaris-icons";
 import { notification } from "antd";
 import axioshttp from "../../../httpaxios";
+import {Frame, ContextualSaveBar} from '@shopify/polaris';
+import { useTranslation } from "react-i18next";
 const Context = React.createContext({ name: "Default" });
 function EditPixel() {
+    const {t} = useTranslation();
     var pixelId = useParams();
     const navigate = useNavigate();
     const [selectedOptions, setSelectedOptions] = useState(["rustic"]);
@@ -150,7 +153,10 @@ function EditPixel() {
             onChange={updateText}
             label={`Select ${selected}`}
             value={inputValue}
-            placeholder="Vintage, cotton, summer"
+            // placeholder="Vintage, cotton, summer"
+            placeholder={
+                selected === "Collections" ? t('updatePixelPage.suggestedCollection') : t('updatePixelPage.suggestedTag')
+            }
             verticalContent={verticalContentMarkup}
             autoComplete="off"
         />
@@ -169,7 +175,7 @@ function EditPixel() {
 
     // const activator = <Button onClick={toggleModal}>Open</Button>;
 
-    const handleChange = useCallback((newValue) => setValue(newValue), []);
+    const updatePixelPageChange = useCallback((newValue) => setValue(newValue), []);
 
     const handleTokenValueChange = useCallback(
         (value) => setTokenValue(value),
@@ -216,7 +222,6 @@ function EditPixel() {
 
         if (value[0] === "Collections") {
             togglePopoverActive();
-            console.log("sdfjh");
         }
     }, []);
 
@@ -230,9 +235,9 @@ function EditPixel() {
     }, []);
 
     const targetArea = [
-        { label: "Entire Store", value: "Entire Store" },
-        { label: "Collections", value: "Collections" },
-        { label: "Tags", value: "Tags" },
+        { label: t("pixelPage.entireStore"), value: "Entire Store" },
+        { label: t("pixelPage.collection"), value: "Collections" },
+        { label: t("pixelPage.tag"), value: "Tags" },
     ];
     // tiktok   Test Event Code
 
@@ -274,9 +279,7 @@ function EditPixel() {
     //////////////////// Backend Functionality//////////////
     ////////////// Shop Collection//////
     const getCollections = () => {
-        console.log(" iam going here ");
         axioshttp.get("/getCollections").then((res) => {
-            console.log(res.data);
             setOptioncollection(res.data);
         });
     };
@@ -284,7 +287,6 @@ function EditPixel() {
     //////////// Shop Tags//////////////
     const getTags = () => {
         axioshttp.get("/getTags").then((res) => {
-            console.log(res.data);
             setOptionsTag(res.data.tags);
         });
     };
@@ -339,6 +341,21 @@ function EditPixel() {
     const handleFormSubmit = async () => {
 
         try {
+            if (
+                typeof tikTokPixelName == "undefined" ||
+                tikTokPixelName == ""
+            ) {
+                toast.error(t('pixelPage.toast.error.pixelNameRequired'));
+                return;
+            }
+            if (typeof tikTokPixelId == "undefined" || tikTokPixelId == "") {
+                toast.error(t('pixelPage.toast.error.pixelIdRequired'));
+                return;
+            }
+            if (typeof tokenValue == "undefined" || tokenValue == "") {
+                toast.error(t('pixelPage.toast.error.pixelAccessTokenRequired'));
+                return;
+            }
             let formData = new FormData();
             formData.append("id",pixels_id);
             if (typeof tikTokPixelName == "undefined" || tikTokPixelName !== "") {
@@ -366,14 +383,15 @@ function EditPixel() {
             console.log('Form Data will be here',formData);
             axioshttp.post('/updateTiktokPixel',formData).then((res) => {
                 openNotificationSuccess("Pixel Edited Successfully");
+                toast.success(t('pixelPage.toast.pixelUpdate'));
                 pixelsGet();
                 navigate('/pixel/tiktok');
             }).catch((error) => {
                     console.error("API Error:", error);
-                    openNotificationSuccess("Error creating pixel");
+                    toast.error(t('pixelPage.toast.error.formSubmit'), error);
                 });
         } catch (error) {
-            console.error("Form Submission Error:", error);
+            toast.error(t('pixelPage.toast.error.formSubmit'), error);
         }
     };
      
@@ -399,24 +417,53 @@ function EditPixel() {
 
     return (
         <>
+
+                 <div style={{height: '10px'}}>
+                    <Frame
+                      logo={{
+                        width: 86,
+                        contextualSaveBarSource:
+                          'https://cdn.shopify.com/s/files/1/2376/3301/files/Shopify_Secondary_Inverted.png',
+                      }}
+                    >
+                      <ContextualSaveBar
+                        fullWidth
+                        message={t('updatePixelPage.unsavedChanges')}
+                        saveAction={{
+                         onAction:() => {handleFormSubmit(),
+                            showForm()},
+                          content:t('updatePixelPage.update'),
+                          loading: false,
+                          disabled: false,
+                        }}
+                        discardAction={{
+                            content:t('updatePixelPage.cancel'),
+                            onAction: () =>{
+                                showForm()
+                            }
+                        }}
+                      />
+                      
+                    </Frame>
+                    </div>
                 <Page
                     backAction={{ content: "Settings", onAction: returnBack }}
-                    title="Edit Pixel"
+                    title={t('updatePixelPage.title')}
                 >
                     <Context.Provider value={contextValue}>
                         {contextHolder}
                     </Context.Provider>
                     <Box>
                        
-                        <Layout>
+                    <Layout>
                             <Layout.Section>
                                 <div className="">
                                     <div>
                                         <Layout>
                                             <Layout.AnnotatedSection
                                                 id="Merchant Details"
-                                                title="Merchant Details"
-                                                description="Following are Details of Connected Tiktok Shop."
+                                                title={t('updatePixelPage.merchantDetails')}
+                                                description={t('updatePixelPage.merchantDetailsText')}
                                             >
                                                 <Card sectioned>
                                                     <InlineGrid
@@ -433,11 +480,10 @@ function EditPixel() {
                                                                 label={
                                                                     <InlineStack>
                                                                         <span>
-                                                                            Pixel
-                                                                            Name{" "}
+                                                                        {t('updatePixelPage.pixelName')}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="Pixel Name is Required."
+                                                                           content={t('updatePixelPage.content.pixelNameToolTip')}
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -453,22 +499,20 @@ function EditPixel() {
                                                                     tikTokPixelName
                                                                 }
                                                                 type="text"
-                                                                onChange={
-                                                                    handleTiktokPixelNameChange
-                                                                }
+                                                                onChange={handleTiktokPixelNameChange}
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
 
                                                             <TextField
                                                                 label={
                                                                     <InlineStack>
                                                                         <span>
-                                                                            Pixel
-                                                                            ID
+                                                                        {t('updatePixelPage.pixelId')}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="Pixel Id is Required."
+                                                                            content={t('updatePixelPage.content.pixelIdToolTip')}
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -488,16 +532,16 @@ function EditPixel() {
                                                                 }
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
                                                             <Select
                                                                 label={
                                                                     <InlineStack>
                                                                         <span>
-                                                                            Target
-                                                                            Area
+                                                                        {t('updatePixelPage.targetArea')}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="Select Target Area."
+                                                                            content={t('updatePixelPage.content.selectTargetAreaToolTip')}
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -519,6 +563,7 @@ function EditPixel() {
                                                             />
                                                             {selected ===
                                                             "Tags" ? (
+                                                                // setSelectedOptions(""),
                                                                 <>
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
@@ -542,13 +587,15 @@ function EditPixel() {
                                                                             onSelect={
                                                                                 setSelectedOptions
                                                                             }
-                                                                            listTitle="Suggested Tags"
+    
+                                                                            listTitle={t('updatePixelPage.suggestedTag')}
                                                                         />
                                                                     </div>
                                                                 </>
                                                             ) : null}
                                                             {selected ===
                                                             "Collections" ? (
+                                                                // setSelectedOptions(""),
                                                                 <>
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
@@ -572,7 +619,8 @@ function EditPixel() {
                                                                             onSelect={
                                                                                 setSelectedOptions
                                                                             }
-                                                                            listTitle="Suggested Collection"
+                                                                            
+                                                                            listTitle={t('updatePixelPage.suggestedCollection')}
                                                                         />
                                                                     </div>
                                                                 </>
@@ -587,8 +635,8 @@ function EditPixel() {
                                         <Layout>
                                             <Layout.AnnotatedSection
                                                 id="Merchant Details"
-                                                title="Merchant Details"
-                                                description="Following are Details of Connected Tiktok Shop."
+                                                title={t('updatePixelPage.merchantDetails')}
+                                                description={t('updatePixelPage.merchantDetailsText')}
                                             >
                                                 <Card sectioned>
                                                     <InlineGrid
@@ -605,11 +653,10 @@ function EditPixel() {
                                                                 label={
                                                                     <InlineStack>
                                                                         <span>
-                                                                            Access
-                                                                            Token
+                                                                        {t('updatePixelPage.accessToken')}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="Access Token is Required."
+                                                                            content={t('updatePixelPage.content.pixelAccessTokenToolTip')}
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -630,17 +677,16 @@ function EditPixel() {
                                                                 }
                                                                 selectTextOnFocus
                                                                 autoComplete="off"
+                                                                required
                                                             />
                                                             <TextField
                                                                 label={
                                                                     <InlineStack>
                                                                         <span>
-                                                                            Test
-                                                                            Event
-                                                                            Code
+                                                                        {t('updatePixelPage.testEvent')}
                                                                         </span>
                                                                         <Tooltip
-                                                                            content="Test Token is Optional."
+                                                                            content={t('updatePixelPage.content.pixelEventCodeToolTip')}
                                                                             className="flex"
                                                                         >
                                                                             <Icon
@@ -671,7 +717,7 @@ function EditPixel() {
                             </Layout.Section>
                         </Layout>
                         
-                        <Box as="div" className=" dis-center">
+                        {/* <Box as="div" className=" dis-center">
                             <div className="dis-center">
                                 <Button
                                     variant="primary"
@@ -684,7 +730,7 @@ function EditPixel() {
                                     Update Pixel
                                 </Button>
                             </div>
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Page>
             
