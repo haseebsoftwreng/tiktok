@@ -467,6 +467,7 @@ function PixelTable() {
                                     t("pixelPage.testEvent"),
                                     t("pixelPage.action"),
                                 ]}
+                                
                                 rows={pixels.map((pixel) => [
                                     getStatusBadge(pixel.id, pixel.status),
                                     pixel.pixel_name,

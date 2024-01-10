@@ -17,7 +17,7 @@ i18n
       ar: { translation: arTranslations },
 
     },
-    lng: 'ar', // Default language
+    lng: 'en', // Default language
     fallbackLng: 'en', // Fallback language if translation is missing
     interpolation: {
       escapeValue: false,

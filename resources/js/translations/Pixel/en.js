@@ -64,7 +64,7 @@ const translations = {
           accessToken:"Access Token",
           testEvent:"Test Event Code",
           save:"Save",
-          cancle:"Cancle",
+          cancel:"Cancle",
           unsavedChanges:"Unsaved Changes",
           suggestedTag:"Suggested Tags",
           suggestedCollection:"Suggested Collections",
@@ -125,7 +125,7 @@ const translations = {
      lastFiftyenDays:"Last 15 days",
      thirtyDays:"Last 30 days",
      apply:"Apply",
-     cancle:"Cancel",
+     cancel :"Cancel",
    }
 };
 

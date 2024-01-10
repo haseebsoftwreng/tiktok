@@ -17,12 +17,14 @@ import { SearchMinor } from "@shopify/polaris-icons";
 import React, { useCallback, useState, useEffect } from "react";
 import axioshttp from "../../../httpaxios";
 import { useTranslation } from "react-i18next";
+import { CSVLink } from "react-csv";
+import { toast } from "react-toastify";
 function IntrestFinder() {
     // Search value data
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const [csvData, setCsvData] = useState([]);
-    const [copyText, setCopyText] = useState('');
-    const [value, setValue] = useState(t('interestFinderPage.searchHere'));
+    const [copyText, setCopyText] = useState("");
+    const [value, setValue] = useState(t("interestFinderPage.searchHere"));
     const [searchResult, setSearchResult] = useState("");
     const [searchString, setSearchString] = useState("");
     const handleChange = useCallback((newValue) => setValue(newValue), []);
@@ -38,7 +40,7 @@ function IntrestFinder() {
         setSearchType("adinterest");
         axioshttp
             .post("/tiktokInterestFinder", {
-                string: searchString,
+                string: value,
             })
             .then((res) => {
                 setSearchResult(res.data.data.recommended_keywords);
@@ -51,7 +53,7 @@ function IntrestFinder() {
         setSearchType("adinterestsuggestion");
         axioshttp
             .post("/tiktokInterestFinder", {
-                string: searchString,
+                string: value,
             })
             .then((res) => {
                 setSearchResult(res.data.data.recommended_keywords);
@@ -79,41 +81,43 @@ function IntrestFinder() {
         useIndexResourceState(orders);
 
     const onSelectChange = (newSelectedRowKeys) => {
-       handleSelectionChange(newSelectedRowKeys);
+        handleSelectionChange(newSelectedRowKeys);
+        const filteredSearchResult = searchResult.filter((item) =>
+            selectedResources.includes(item.keyword_id)
+        );
         const unique = [];
         const csvDataArray = [];
         if (newSelectedRowKeys.length != 0) {
-            searchResult.map((search, index) => {
-                if (newSelectedRowKeys.includes(index + 1)) {
-                    csvDataArray.push({
-                        name: search.keyword,
-                        status: search.status,
-                    });
-                    setCsvData(csvDataArray);
-                    unique.push(search.keyword);
-                    setCopyText(unique.toString());
-                }
+            filteredSearchResult.map((search) => {
+                csvDataArray.push({
+                    name: search.keyword,
+                    status: search.status,
+                });
+                setCsvData(csvDataArray);
+                unique.push(search.keyword);
+                setCopyText(unique.toString());
             });
         }
     };
-    const rowSelection = {
-        selectedResources,
-        onChange: onSelectChange,
-    };
-    console.log('row Selection',rowSelection)
+
     const handleCopyText = () => {
-        console.log(copyText);
-        // setToasterMessage("Selected Text Copied!");
-        // success("bottom", "Selected Text Copied!");
+        toast.success("Selected Text Copied!");
         navigator.clipboard.writeText(copyText);
     };
-    const rowMarkup = orders.map(({ id, name, status }, index,) => (
+
+    useEffect(() => {
+        if (selectedResources.length > 0) {
+            onSelectChange(selectedResources);
+        }
+    }, [selectedResources]);
+
+    const rowMarkup = orders.map(({ id, name, status }, index) => (
         <IndexTable.Row
             id={id}
             key={index + 1}
             selected={selectedResources.includes(id)}
             position={index}
-            onSelectionChange={rowSelection}
+            // onSelectionChange={rowSelection}
         >
             <IndexTable.Cell>
                 <Text variant="bodyMd" fontWeight="bold" as="span">
@@ -126,25 +130,36 @@ function IntrestFinder() {
 
     const [searchType, setSearchType] = useState("adinterest");
     const handleSearchResult = () => {
+        // setValue(value);
         axioshttp
             .post("/tiktokInterestFinder", { string: value, type: searchType })
             .then((res) => {
                 setSearchResult(res.data.data.recommended_keywords);
             });
     };
+    
+    const headers = [
+        { label: "Name", key: "name" },
+        { label: "Status", key: "status" },
+    ];
+    const csvReport = {
+        data: csvData,
+        headers: headers,
+        filename: "Interest_Report.csv",
+    };
     return (
         <div className="marginTop20">
             <div className="marginTop20">
                 <InlineGrid columns={["twoThirds", "oneThird"]} gap={400}>
                     <TextField
-                        label={t('interestFinderPage.searchHere')}
+                        label={t("interestFinderPage.searchHere")}
                         labelHidden
                         value={value}
-                        onChange={handleChange}
+                        onChange={setValue}
                         autoComplete="off"
                     />
                     <Button icon={SearchMinor} onClick={handleSearchResult}>
-                        {t('interestFinderPage.search')}
+                        {t("interestFinderPage.search")}
                     </Button>
                 </InlineGrid>
             </div>
@@ -156,50 +171,58 @@ function IntrestFinder() {
                             pressed={isFirstButtonActive}
                             onClick={handleFirstButtonClick}
                         >
-                            {t('interestFinderPage.interest')}
+                            {t("interestFinderPage.interest")}
                         </Button>
                         <Button
                             pressed={!isFirstButtonActive}
                             onClick={handleSecondButtonClick}
                         >
-                            {t('interestFinderPage.interestSuggested')}
+                            {t("interestFinderPage.interestSuggested")}
                         </Button>
                     </ButtonGroup>
+                </div>
+                <div>
+                    {/* <div>Selected {selectedResources.length} Items</div> */}
+                    {/* {selectedResources.length > 0 ? ( */}
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            <>
+                                <div>
+                                    Selected {selectedResources.length} Items
+                                </div>
+                                 {selectedResources.length > 0 ? (
+                                    <div style={{}}>
+                                    {" "}
+                                    <ButtonGroup variant="segmented">
+                                        <Button onClick={handleCopyText}>
+                                            {t("interestFinderPage.copy")}
+                                        </Button>
+                                        <CSVLink {...csvReport}>
+                                            {" "}
+                                            <Button>
+                                                {t(
+                                                    "interestFinderPage.download"
+                                                )}
+                                            </Button>{" "}
+                                        </CSVLink>
+                                    </ButtonGroup>
+                                </div>
+                                 ):null}
+                                
+                            </>
+                        </div>
+                    {/* ) : null} */}
                 </div>
                 <Divider />
 
                 <div className="marginTop20">
                     {isFirstButtonActive ? (
                         <Card>
-                            {selectedResources.length > 0 ? (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        marginBottom: "10px",
-                                    }}
-                                >
-                                    <>
-                                        <div>
-                                            Selected {selectedResources.length}{" "}
-                                            Items
-                                        </div>
-                                        <div style={{}}>
-                                            {" "}
-                                            <ButtonGroup variant="segmented">
-                                                <Button
-                                                    onClick={handleCopyText}
-                                                >
-                                                    {t('interestFinderPage.copy')}
-                                                 </Button>
-                                                <Button>
-                                                {t('interestFinderPage.download')}
-                                                </Button>
-                                            </ButtonGroup>
-                                        </div>
-                                    </>
-                                </div>
-                            ) : null}
                             <IndexTable
                                 resourceName={resourceName}
                                 itemCount={orders.length}
@@ -215,50 +238,23 @@ function IntrestFinder() {
                                 ]}
                                 emptyState={[
                                     <EmptyState
-                                        heading={t('interestFinderPage.data')}
-                                        image="src/Images/download.svg"
+                                        heading={t("interestFinderPage.data")}
+                                        image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
                                         fullWidth
                                     >
                                         <p>
-                                            {t('interestFinderPage.description')}
+                                            {t(
+                                                "interestFinderPage.description"
+                                            )}
                                         </p>
                                     </EmptyState>,
                                 ]}
                             >
-                                {rowMarkup }
+                                {rowMarkup}
                             </IndexTable>
                         </Card>
                     ) : (
                         <Card>
-                            {selectedResources.length > 0 ? (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        marginBottom: "10px",
-                                    }}
-                                >
-                                    <>
-                                        <div>
-                                            Selected {selectedResources.length}{" "}
-                                            Items
-                                        </div>
-                                        <div style={{}}>
-                                            {" "}
-                                            <ButtonGroup variant="segmented">
-                                            <Button
-                                                    onClick={handleCopyText}
-                                                >
-                                                    {t('interestFinderPage.copy')}
-                                                 </Button>
-                                                <Button>
-                                                {t('interestFinderPage.download')}
-                                                </Button>
-                                            </ButtonGroup>
-                                        </div>
-                                    </>
-                                </div>
-                            ) : null}
                             <IndexTable
                                 resourceName={resourceName}
                                 itemCount={orders.length}
@@ -274,12 +270,14 @@ function IntrestFinder() {
                                 ]}
                                 emptyState={[
                                     <EmptyState
-                                        heading={t('interestFinderPage.data')}
-                                        image="src/Images/download.svg"
+                                        heading={t("interestFinderPage.data")}
+                                        image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
                                         fullWidth
                                     >
                                         <p>
-                                            {t('interestFinderPage.description')}
+                                            {t(
+                                                "interestFinderPage.description"
+                                            )}
                                         </p>
                                     </EmptyState>,
                                 ]}
