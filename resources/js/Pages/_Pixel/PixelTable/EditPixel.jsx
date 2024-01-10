@@ -30,26 +30,19 @@ import { useNavigate,Link,useParams  } from "react-router-dom";
 import { Tag, Autocomplete } from "@shopify/polaris";
 import React, { useState, useEffect } from "react";
 import { useCallback, useMemo } from "react";
-import {
-    TickMinor,
-    MobileCancelMajor,
-    StoreMajor,
-    EditMajor,
-    DeleteMinor,
-} from "@shopify/polaris-icons";
+
 import {
     QuestionMarkInverseMajor,
 } from "@shopify/polaris-icons";
-import { notification } from "antd";
 import axioshttp from "../../../httpaxios";
 import {Frame, ContextualSaveBar} from '@shopify/polaris';
 import { useTranslation } from "react-i18next";
-const Context = React.createContext({ name: "Default" });
+
 function EditPixel() {
     const {t} = useTranslation();
     var pixelId = useParams();
     const navigate = useNavigate();
-    const [selectedOptions, setSelectedOptions] = useState(["rustic"]);
+    const [selectedOptions, setSelectedOptions] = useState("");
     const [inputValue, setInputValue] = useState("");
     const [active, setActive] = useState(false);
     const [show, setShow] = useState(false);
@@ -78,6 +71,9 @@ function EditPixel() {
     // const [CampaignValue, setCampaignValue] = useState("");
     const [optionsTag, setOptionsTag] = useState([]);
     const [optionCollections, setOptioncollection] = useState([]);
+    const [collections, setCollection] = useState([]);
+    const [tag, setTag] = useState([]);
+
     const deselectedOptions = useMemo(
         () => [
             { value: "rustic", label: "Rustic" },
@@ -280,14 +276,14 @@ function EditPixel() {
     ////////////// Shop Collection//////
     const getCollections = () => {
         axioshttp.get("/getCollections").then((res) => {
-            setOptioncollection(res.data);
+            setCollection(res.data);
         });
     };
 
     //////////// Shop Tags//////////////
     const getTags = () => {
         axioshttp.get("/getTags").then((res) => {
-            setOptionsTag(res.data.tags);
+            setTag(res.data.tags);
         });
     };
     const [pixels, setP_pixels] = useState([]);
@@ -305,39 +301,19 @@ function EditPixel() {
             setTikTokPixelId(res.data.pixel_id);
             setEventCode(res.data.test_token);
             setTokenValue(res.data.access_token);
-            setOptionsTag(res.data.tag != null ? JSON.parse(res.data.tag) : " ");
-            setOptioncollection(res.data.collection != null ? JSON.parse(res.data.collection) : " ");
-            // setInputs({
-            //     id : pixelId,
-            //     pixel_name : res.data.pixel_name,
-            //     pixel_id : res.data.pixel_id,
-            //     type : res.data.type,
-            //     Collection :res.data.collection != null ? JSON.parse(res.data.collection) : " " ,
-            //     tags : res.data.tag != null ? JSON.parse(res.data.tag) : " ",
-            //     access_token : res.data.access_token,
-            //     test_token : res.data.test_token,
-            //     utm_campaign : res.data.utm_campaign,
-            //     utm_source : res.data.utm_source,
-            //     utm_medium : res.data.utm_medium
-
-            // })
+            // setOptionsTag(res.data.tag != null ? JSON.parse(res.data.tag) : " ");
+            // setOptioncollection(res.data.collection != null ? JSON.parse(res.data.collection) : " ");
+            if(res.data.collection != null){
+                setSelectedOptions(JSON.parse(res.data.collection));
+            }else if(res.data.tag != null){
+                setSelectedOptions(JSON.parse(res.data.tag));
+            }else{
+                setSelectedOptions("");
+            }
         });  
     }
-    const [api, contextHolder] = notification.useNotification();
-    const openNotificationSuccess = (notifyText) => {
-        console.log(notifyText);
-        api.success({
-            message: notifyText,
-            placement: "bottomRight",
-            duration: 2.5,
-        });
-    };
-    const contextValue = useMemo(
-        () => ({
-            name: "Ant Design",
-        }),
-        []
-    );
+
+   
     const handleFormSubmit = async () => {
 
         try {
@@ -373,16 +349,14 @@ function EditPixel() {
             if (eventCode !== "") {
                 formData.append("test_token", eventCode);
             }
-            
-            if (optionsTag != null) {
-                formData.append("tags", optionsTag);
+            if (selectedOptions != null) {
+                if (selected === "Tags") {
+                    formData.append("tags", selectedOptions);
+                } else {
+                    formData.append("collections", selectedOptions);
+                }
             }
-            if (optionCollections != null) {
-                formData.append("collections", optionCollections);
-            }
-            console.log('Form Data will be here',formData);
             axioshttp.post('/updateTiktokPixel',formData).then((res) => {
-                openNotificationSuccess("Pixel Edited Successfully");
                 toast.success(t('pixelPage.toast.pixelUpdate'));
                 pixelsGet();
                 navigate('/pixel/tiktok');
@@ -450,9 +424,7 @@ function EditPixel() {
                     backAction={{ content: "Settings", onAction: returnBack }}
                     title={t('updatePixelPage.title')}
                 >
-                    <Context.Provider value={contextValue}>
-                        {contextHolder}
-                    </Context.Provider>
+    
                     <Box>
                        
                     <Layout>
@@ -568,7 +540,7 @@ function EditPixel() {
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
                                                                             allowMultiple
-                                                                            options={optionsTag.map(
+                                                                            options={tag.map(
                                                                                 (
                                                                                     option,
                                                                                     index
@@ -600,7 +572,7 @@ function EditPixel() {
                                                                     <div className="hide-scroll">
                                                                         <Autocomplete
                                                                             allowMultiple
-                                                                            options={optionCollections.map(
+                                                                            options={collections.map(
                                                                                 (
                                                                                     option,
                                                                                     index

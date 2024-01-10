@@ -107,7 +107,7 @@ function IntrestFinder() {
         // success("bottom", "Selected Text Copied!");
         navigator.clipboard.writeText(copyText);
     };
-    const rowMarkup = orders.map(({ id, name, status }, index) => (
+    const rowMarkup = orders.map(({ id, name, status }, index,) => (
         <IndexTable.Row
             id={id}
             key={index + 1}
@@ -225,7 +225,7 @@ function IntrestFinder() {
                                     </EmptyState>,
                                 ]}
                             >
-                                {rowMarkup}
+                                {rowMarkup }
                             </IndexTable>
                         </Card>
                     ) : (
