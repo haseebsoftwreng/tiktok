@@ -84,17 +84,7 @@ function EditPixel() {
         ],
         []
     );
-    const [isFirstButtonActive, setIsFirstButtonActive] = useState(true);
 
-    const handleFirstButtonClick = useCallback(() => {
-        if (isFirstButtonActive) return;
-        setIsFirstButtonActive(true);
-    }, [isFirstButtonActive]);
-
-    const handleSecondButtonClick = useCallback(() => {
-        if (!isFirstButtonActive) return;
-        setIsFirstButtonActive(false);
-    }, [isFirstButtonActive]);
     const [options, setOptions] = useState(deselectedOptions);
 
     const updateText = useCallback(
@@ -149,7 +139,6 @@ function EditPixel() {
             onChange={updateText}
             label={`Select ${selected}`}
             value={inputValue}
-            // placeholder="Vintage, cotton, summer"
             placeholder={
                 selected === "Collections" ? t('updatePixelPage.suggestedCollection') : t('updatePixelPage.suggestedTag')
             }
@@ -165,68 +154,20 @@ function EditPixel() {
             .join("");
     }
     // end
-
-    const toggleModal = useCallback(() => setActive((active) => !active), []);
     const showForm = useCallback(() => setShow((show) => !show), []);
-
-    // const activator = <Button onClick={toggleModal}>Open</Button>;
-
-    const updatePixelPageChange = useCallback((newValue) => setValue(newValue), []);
 
     const handleTokenValueChange = useCallback(
         (value) => setTokenValue(value),
         []
     );
 
-    const [popoverActive, setPopoverActive] = useState(false);
-    const ctmoption = () => {
-        console.log(selected);
-    };
-
-    const togglePopoverActive = useCallback(
-        () => setPopoverActive((popoverActive) => !popoverActive),
-        []
-    );
-    const [canActive, setCanActive] = React.useState(null);
-
-    const toggleActive = (id) => {
-        setCanActive((activeId) => (activeId !== id ? id : null));
-    };
-
-    const activator = (
-        <Button fullWidth onClick={togglePopoverActive}>
-            Collections
-        </Button>
-    );
-    const btnactivator = (
-        <>
-         
-            <Button
-                fullWidth
-                onClick={() => toggleActive("popover1")}
-                variant="primary"
-            >
-                Change
-            </Button>
-        </>
-      
-    );
     // select Area
 
-    const handlechangesecond = useCallback((value) => {
-        setSelected(value[0]);
-
-        if (value[0] === "Collections") {
-            togglePopoverActive();
-        }
-    }, []);
 
     const handleSelectTargetAreaChange = useCallback((value) => {
+        setSelectedOptions("");
         setSelected(value);
-        console.log(value);
         if (value === "Collections") {
-            togglePopoverActive();
-            console.log("sdfjh");
         }
     }, []);
 
@@ -361,7 +302,6 @@ function EditPixel() {
                 pixelsGet();
                 navigate('/pixel/tiktok');
             }).catch((error) => {
-                    console.error("API Error:", error);
                     toast.error(t('pixelPage.toast.error.formSubmit'), error);
                 });
         } catch (error) {
@@ -376,13 +316,6 @@ function EditPixel() {
         getCollections();
       }, []);
 
-  
-
-    const handleDelete = (pixelId) => {
-        toggleModal();
-        setDeletedPixelId(pixelId);
-    };
-    
     const returnBack=()=>{
         pixelsGet();
         navigate('/pixel/tiktok');

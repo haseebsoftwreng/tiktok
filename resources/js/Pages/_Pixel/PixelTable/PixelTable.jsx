@@ -316,15 +316,6 @@ function PixelTable() {
             if (eventCode !== "") {
                 formData.append("test_token", eventCode);
             }
-            // if (SourceValue !== "") {
-            //     formData.append("utm_source", SourceValue);
-            // }
-            // if (MediumValue !== "") {
-            //     formData.append("utm_medium", MediumValue);
-            // }
-            // if (CampaignValue !== "") {
-            //     formData.append("utm_campaign", CampaignValue);
-            // }
             if (selectedOptions != null) {
                 if (selected === "Tags") {
                     formData.append("tags", selectedOptions);
@@ -353,8 +344,8 @@ function PixelTable() {
         }
     };
 
-    const handleSearchBar = () => {
-        // if (event.key === 'Enter' || event.keyCode === 13) {
+    const handleSearchBar = (value) => {
+         setValue(value);
         if (value != "") {
             axioshttp
                 .post("/getTiktoPixelBySearch", { string: value })
@@ -364,7 +355,6 @@ function PixelTable() {
         } else {
             pixelsGet();
         }
-        // }
     };
     ///////////////Call When Page Render////////
     useEffect(() => {
@@ -444,8 +434,7 @@ function PixelTable() {
                                 label={t("pixelPage.searchHere")}
                                 labelHidden
                                 value={value}
-                                onChange={handleChange}
-                                onKeyUp={handleSearchBar}
+                                onChange={handleSearchBar}
                                 autoComplete="off"
                             />
                             <Button variant="primary" onClick={showForm}>
