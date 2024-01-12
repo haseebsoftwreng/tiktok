@@ -75,8 +75,10 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
       }
     }
   ];
+  const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
+  const index = ranges.findIndex(range => JSON.stringify(range) === JSON.stringify(retrievedObject));
   const [popoverActive, setPopoverActive] = useState(false);
-  const [activeDateRange, setActiveDateRange] = useState(ranges[0]);
+  const [activeDateRange, setActiveDateRange] = useState(retrievedObject!=null && retrievedObject!="undefined"?ranges[index]:ranges[0]);
   const [inputValues, setInputValues] = useState({});
   const [{ month, year }, setDate] = useState({
     month: activeDateRange.period.since.getMonth(),
@@ -86,6 +88,7 @@ export default function DateRangePicker({Iconvalue,text,setOnChange,setDatePicke
   const VALID_YYYY_MM_DD_DATE_REGEX = /^\d{4}-\d{1,2}-\d{1,2}/;
 
   useEffect(()=>{
+    
     setDatePickerValue(activeDateRange)
     // if(activeDateRange.title=='Today' ||activeDateRange.title=='Yesterday' ||activeDateRange.title=='Last 7 days' ||activeDateRange.title=='Last 15 days'||activeDateRange.title=='Last 30 days'){
     //  setPopoverActive(false);

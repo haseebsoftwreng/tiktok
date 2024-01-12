@@ -16,13 +16,12 @@ use App\Http\Controllers\Pixel\TiktokPixelController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', function () {
-    return view('welcome');
-})->middleware(['verify.shopify'])->name('home');
-
 
 Route::middleware(['verify.shopify'])
     ->group(function () {
+        Route::get('/', function () {
+            return view('welcome');
+        })->name('home');
         Route::post('/saveTiktokPixel',[TiktokPixelController::class,'saveTiktokPixel'])->name('tiktokStore');
         Route::get('/getCollections',[TiktokPixelController::class,'getCollections'])->name('getCollectios');
         Route::get('/getTags',[TiktokPixelController::class,'getTags'])->name('getTags');
@@ -36,10 +35,6 @@ Route::middleware(['verify.shopify'])
         Route::post('/getTiktokPixelById',[TiktokPixelController::class,'tiktokPixelsGetById'])->name('getTiktokPixelsById');
         Route::post('/updateTiktokPixel',[TiktokPixelController::class,'tiktokPixelEdited'])->name('tiktokPixelEdited');
 
-        Auth::routes();
-
-        Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-        
         Route::get('{any}', function () {
             return view('welcome');
         });

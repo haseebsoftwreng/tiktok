@@ -33,7 +33,10 @@ export default function Pixel() {
     const [analyiesEndDate, setAnalyiesEndDate] = useState();
     const [pixelAnalytics, setPixelAnalytics] = useState("");
     const [pixelAnalyticsData, setPixelAnalyticsData] = useState("");
-    const [pixelIdSelected, setPixelIdSelected] = useState('');
+    const [selectedPixelValue, setSelectedPixelValue] = useState("");
+    const [localStorageGetStatus, setlocalStorageGetStatus] = useState(false);
+    const [getPixelStatus, setPixelStatus] = useState(false);
+
     const orderReport = [
         {
             heading: t('analyticsPages.purchase'),
@@ -106,11 +109,12 @@ export default function Pixel() {
     const pixelsGet = () => {
         axioshttp.get("/getTikTokPixel").then((res) => {
             setPixels(res.data);
+            setPixelStatus(true);
         });
     };
 
     const getAnalytic = (pixelId, Tid) => {
-        setPixelIdSelected({ pixel_Id: pixelId, T_id: Tid });
+        setSelectedPixelValue({ pixel_Id: pixelId, T_id: Tid });
         axioshttp
             .post("/getTiktokAnalytic", { id: pixelId, T_id: Tid })
             .then((res) => {
@@ -120,11 +124,8 @@ export default function Pixel() {
     const localStorageData=(pixel_Id,selected_DateSlot)=>{
         localStorage.setItem('pixel_id', pixel_Id);
         localStorage.setItem('selectedDateSlot', JSON.stringify(selected_DateSlot));
-        //  const storedData = localStorage.getItem('selectedDateSlot');
-        //  const retrievedObject = JSON.parse(storedData);
     }
 
-    const [selectedPixelValue, setSelectedPixelValue] = useState(localStorage.getItem('pixel_id'));
     const handleDateRange = () => {
          
         if(selectedPixelValue !== null && selectedPixelValue !== ""){
@@ -173,20 +174,8 @@ export default function Pixel() {
     };
 
     const handleByLocalStorage = () => {
-        // var pixel_id = localStorage.getItem('pixel_id');
-        // var selectedStartDate = localStorage.getItem('seletedStartDate');
-        // var selectedEndDate = localStorage.getItem('seletedEndDate');
-
-        // setSelectedPixelValue(pixel_id);
-        // setAnalyiesStartDate(selectedStartDate);
-        // setAnalyiesEndDate(selectedEndDate);
-        setAnalyiesStartDate(datePickerValue.period.since);
-        setAnalyiesEndDate(datePickerValue.period.until);
         const eventValue = selectedPixelValue;
-        console.log('start date in side local storage',datePickerValue);
-
         let arr = eventValue.split("/");
-        
             axioshttp
                 .post("/getTiktokAnalyticByRange", {
                     T_id: arr[0],
@@ -195,14 +184,26 @@ export default function Pixel() {
                     end: analyiesEndDate,
                 })
                 .then((res) => {
-                    console.log('count analyes',res.data.countAnalyse)
                     setPixelAnalytics(res.data.countAnalyse);
                     setPixelAnalyticsData(res.data.mergedData);
                 });
     };
-
+   
     useEffect(() => {
-        pixelsGet();
+        // localStorage.clear();
+
+        if(!getPixelStatus){
+            pixelsGet();
+        }
+        const pixelID = localStorage.getItem('pixel_id');
+        const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
+
+        if (!localStorageGetStatus && retrievedObject && typeof retrievedObject === 'object') {
+            setDatePickerValue(retrievedObject);
+            setSelectedPixelValue(pixelID);
+            setlocalStorageGetStatus(true);
+          }
+
         if (
             datePickerValue &&
             datePickerValue.period &&
@@ -212,29 +213,12 @@ export default function Pixel() {
             setAnalyiesStartDate(datePickerValue.period.since);
             setAnalyiesEndDate(datePickerValue.period.until);
         }
-        
-        // const storedData = localStorage.getItem('selectedDateSlot');
-        // const pixelID = localStorage.getItem('pixel_id');
-        // const retrievedObject = JSON.parse(localStorage.getItem('selectedDateSlot'));
-        // if (retrievedObject && typeof retrievedObject === 'object') {
-        //     setDatePickerValue(retrievedObject);
-        //   }
-        //   if(pixelID!=null){
-        //     setSelectedPixelValue(pixelID)
-        //   }
-        
-        console.log('updated value Pixel',JSON.parse(localStorage.getItem('selectedDateSlot')));
-        console.log('local Value Pixel',localStorage.getItem('pixel_id'));
-        console.log('djsidjsidsijdisdjisdisdisjdijsidjsidjisdisjdisjdisidsi');
-        console.log('updated value Pixel',selectedPixelValue);
-        console.log('local Value Pixel',datePickerValue);
-
-        if(localStorage.getItem('pixel_id')===selectedPixelValue){
-            console.log('i am here');
-            // handleByLocalStorage();
+        console.log(retrievedObject);
+        if(localStorage.getItem('pixel_id')===selectedPixelValue && JSON.stringify(retrievedObject) === JSON.stringify(datePickerValue) && analyiesStartDate!=null && analyiesEndDate){
+            handleByLocalStorage();
         }
        
-    }, [datePickerValue]);
+    }, [datePickerValue,analyiesStartDate]);
 
     ////////////////End of Backend Code////////////
 
